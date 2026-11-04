@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Q
 
 REVIEW_MAX_LENGTH = 5000
-RATING_CHOICES = [Decimal(n) / 2 for n in range(1, 11)]  # 0.5 .. 5.0
+RATING_CHOICES = [(Decimal(n) / 2).quantize(Decimal("0.1")) for n in range(1, 11)]  # 0.5, 1.0 .. 5.0
 
 
 def validate_half_star(value):

@@ -1,7 +1,9 @@
 import json
 from decimal import Decimal, InvalidOperation
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.db import IntegrityError, transaction
 from django.db.models import F, Q
 from django.utils import timezone
@@ -14,7 +16,7 @@ from accounts.access import visible_owner
 from services import geocoding, setlistfm
 
 from . import top3
-from .forms import ManualShowForm, SearchForm
+from .forms import EntryForm, ManualShowForm, SearchForm
 from .models import RATING_CHOICES, REVIEW_MAX_LENGTH, Artist, Attendance, Event, Venue
 
 
@@ -25,10 +27,6 @@ def _is_htmx(request):
 def _own_attendance(request, pk):
     """Entries are only ever edited by their author; anyone else gets a 404."""
     return get_object_or_404(Attendance.objects.with_related(), pk=pk, user=request.user)
-
-
-def _coming_soon(request, *args, **kwargs):
-    return render(request, "shows/coming_soon.html")
 
 
 # Screen 2: Top 3 (US-9) -------------------------------------------------------------------
@@ -119,7 +117,6 @@ def diary(request, username):
     return render(request, template, context)
 
 
-edit = delete = _coming_soon
 
 
 # Screen 3: search and log (US-3, US-4, US-5) ---------------------------------------------
@@ -314,3 +311,38 @@ def review(request, pk):
     else:
         context["editing"] = True
     return render(request, "shows/partials/review_block.html", context)
+
+
+# Screen 6: edit and delete (US-8) -------------------------------------------------------
+
+@login_required
+def edit(request, pk):
+    att = _own_attendance(request, pk)
+    form = EntryForm(request.POST or None, initial={"rating": att.rating, "review": att.review})
+    if request.method == "POST" and form.is_valid():
+        att.rating = form.cleaned_data["rating"]
+        att.save(update_fields=["rating", "updated_at"])
+        save_review(att, form.cleaned_data["review"])
+        messages.success(request, "Your changes are saved.")
+        return redirect("shows:detail", att.event_id)
+    return render(request, "shows/edit.html", {"att": att, "form": form})
+
+
+@login_required
+def delete(request, pk):
+    """GET asks for confirmation; POST deletes from diary, stats, map and Top 3."""
+    att = _own_attendance(request, pk)
+    if request.method == "POST":
+        label = f"{att.event.artist.name} at {att.event.venue.name}"
+        att.delete()  # post_delete signal closes the Top 3 gap
+        messages.success(request, f"Deleted {label} from your diary.")
+        diary_url = reverse("shows:diary", args=[request.user.username])
+        if _is_htmx(request):
+            resp = HttpResponse("")
+            resp["HX-Redirect"] = diary_url
+            return resp
+        return redirect(diary_url)
+    if _is_htmx(request) and request.GET.get("cancel"):
+        return render(request, "shows/partials/delete_start.html", {"att": att})
+    template = "shows/partials/delete_confirm.html" if _is_htmx(request) else "shows/delete.html"
+    return render(request, template, {"att": att})

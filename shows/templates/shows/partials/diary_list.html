@@ -27,6 +27,7 @@
             {% if att.review %}
               {% if not att.review_hidden %}
                 <p class="mt-2 max-w-prose text-paper/90">{{ att.review|truncatechars:180 }}</p>
+                {% if att.review_edited_at %}<p class="text-sm text-haze">Edited {{ att.review_edited_at|date:"M j, Y" }}</p>{% endif %}
               {% elif user.is_authenticated and user.pk == att.user_id %}
                 <p class="mt-2 max-w-prose text-paper/90">{{ att.review|truncatechars:180 }}</p>
                 <p class="mt-1 text-sm text-marquee">Hidden from others by a moderator.</p>

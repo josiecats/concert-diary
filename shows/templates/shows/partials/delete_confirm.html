@@ -1,0 +1,11 @@
+<div id="delete-{{ att.pk }}" class="rounded-lg border-2 border-riso bg-booth p-5" role="alertdialog"
+     aria-labelledby="delete-{{ att.pk }}-title" aria-describedby="delete-{{ att.pk }}-desc">
+  <p id="delete-{{ att.pk }}-title" class="font-bold">Delete {{ att.event.artist.name }} at {{ att.event.venue.name }}?</p>
+  <p id="delete-{{ att.pk }}-desc" class="mt-1 text-haze">This removes it from your diary, stats, map and Top 3{% if att.review %}, and deletes your review{% endif %}. It can't be undone.</p>
+  <form method="post" action="{% url 'shows:delete' att.pk %}" hx-post="{% url 'shows:delete' att.pk %}" class="mt-4 flex flex-wrap gap-3">
+    {% csrf_token %}
+    <button type="submit" class="rounded-full bg-riso px-5 py-2 font-bold text-stage hover:bg-paper" autofocus>Yes, delete</button>
+    <a href="{% url 'shows:edit' att.pk %}" hx-get="{% url 'shows:delete' att.pk %}?cancel=1" hx-target="#delete-{{ att.pk }}" hx-swap="outerHTML"
+       class="rounded-full border border-rail px-5 py-2 hover:bg-stage">Keep it</a>
+  </form>
+</div>

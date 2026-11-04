@@ -123,7 +123,37 @@ def check_detail(page, mode):
     return {"filled_halves": filled, "live_update": filled == 10}
 
 
+def check_edit(page, mode):
+    page.goto(f"{BASE}/u/demo/diary/")
+    page.click("a[aria-label^='Edit your entry for boygenius']")
+    page.wait_for_load_state("networkidle")
+    page.select_option("#id_rating", "4.5")
+    page.fill("#id_review", "Edited after a rewatch of the phone videos. Still the best night.")
+    page.click("button:has-text('Save changes')")
+    page.wait_for_selector("text=Your changes are saved.")
+    edited = page.locator("text=/^Edited /").count()
+    page.click("text=Edit or delete this entry")
+    page.click("text=Delete from diary")
+    page.wait_for_selector("[role=alertdialog]")
+    page.click("text=Keep it")
+    page.wait_for_selector("text=Delete from diary")
+    page.click("text=Delete from diary")
+    page.wait_for_selector("[role=alertdialog]")
+    page.screenshot(path=str(OUT / f"edit-confirm-{mode}.png"), full_page=True)
+    page.click("button:has-text('Yes, delete')")
+    page.wait_for_url("**/u/demo/diary/")
+    message = page.locator("text=Deleted boygenius at Madison Square Garden from your diary.").count()
+    page.goto(f"{BASE}/u/demo/")
+    page.wait_for_load_state("networkidle")
+    shows = page.inner_text("[data-stat=shows]")
+    first_poster = page.locator("#top3 li").first.inner_text().split("\n")[1]
+    page.goto(f"{BASE}/u/demo/diary/")
+    return {"edited_label": edited, "deleted_message": message, "shows": shows, "new_no1": first_poster,
+            "live_update": edited >= 1 and message == 1 and shows == "14" and first_poster.upper() == "BIG THIEF"}
+
+
 SCREENS = {
+    "edit": (True, check_edit),
     "detail": (True, check_detail),
     "diary": (True, check_diary),
     "profile": (False, check_profile),

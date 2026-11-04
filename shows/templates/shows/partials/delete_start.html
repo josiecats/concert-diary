@@ -1,0 +1,4 @@
+<div id="delete-{{ att.pk }}">
+  <a href="{% url 'shows:delete' att.pk %}" hx-get="{% url 'shows:delete' att.pk %}" hx-target="#delete-{{ att.pk }}" hx-swap="outerHTML"
+     class="inline-block rounded-full border border-riso px-5 py-2 font-bold text-riso hover:bg-riso hover:text-stage">Delete from diary</a>
+</div>
