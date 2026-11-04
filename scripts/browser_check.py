@@ -1,0 +1,90 @@
+"""Browser checks for what Django's test client can't see: layout, Leaflet, live HTMX swaps.
+
+Run with the webapp-testing helper so the dev server is managed for you:
+
+    python .claude/skills/webapp-testing/scripts/with_server.py \
+        --server ".venv/bin/python manage.py runserver 8765 --noreload" --port 8765 \
+        -- .venv/bin/python scripts/browser_check.py profile
+
+Screenshots land in docs/screens/<screen>-{mobile,desktop}.png.
+"""
+
+import sys
+from pathlib import Path
+
+from playwright.sync_api import sync_playwright
+
+BASE = "http://localhost:8765"
+OUT = Path(__file__).resolve().parent.parent / "docs" / "screens"
+WIDTHS = {"mobile": (375, 812), "desktop": (1280, 900)}
+
+
+def login(page, username="demo", password="demo12345"):
+    page.goto(f"{BASE}/accounts/login/")
+    page.fill("input[name=login]", username)
+    page.fill("input[name=password]", password)
+    page.click("button[type=submit]")
+    page.wait_for_load_state("networkidle")
+
+
+def wait_for_map(page, min_pins=1):
+    page.wait_for_function(
+        f"() => Number(document.querySelector('[data-diary-map]')?.dataset.pinCount || 0) >= {min_pins}",
+        timeout=15000,
+    )
+    return int(page.eval_on_selector("[data-diary-map]", "el => el.dataset.pinCount"))
+
+
+def check_profile(page, mode):
+    page.goto(f"{BASE}/u/demo/")
+    page.wait_for_load_state("networkidle")
+    pins = wait_for_map(page, 5)
+    markers = page.locator(".leaflet-marker-icon").count()
+    # fitBounds: every marker should be inside the visible map box.
+    inside = page.evaluate("""() => {
+        const box = document.querySelector('#profile-map').getBoundingClientRect();
+        return [...document.querySelectorAll('.leaflet-marker-icon')].every(m => {
+            const r = m.getBoundingClientRect(); const x = r.left + r.width/2, y = r.top + r.height/2;
+            return x >= box.left && x <= box.right && y >= box.top && y <= box.bottom; });
+    }""")
+    # Pins in the same metro area overlap at world zoom, so open one that stands alone.
+    page.locator(".leaflet-marker-icon[title^='Hollywood Bowl']").click()
+    page.wait_for_selector(".leaflet-popup-content")
+    page.wait_for_timeout(500)  # let the popup fade in
+    popup = page.inner_text(".leaflet-popup-content")
+    return {"pins": pins, "markers": markers, "all_pins_in_view": inside, "popup": popup.replace("\n", " | ")}
+
+
+SCREENS = {
+    "profile": (False, check_profile),
+}
+
+
+def main(names):
+    OUT.mkdir(parents=True, exist_ok=True)
+    failures = 0
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        for name in names:
+            needs_login, check = SCREENS[name]
+            for mode, (w, h) in WIDTHS.items():
+                ctx = browser.new_context(viewport={"width": w, "height": h})
+                page = ctx.new_page()
+                errors = []
+                page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+                page.on("pageerror", lambda e: errors.append(str(e)))
+                if needs_login:
+                    login(page)
+                result = check(page, mode) or {}
+                overflow = page.evaluate("() => document.documentElement.scrollWidth - window.innerWidth")
+                page.screenshot(path=str(OUT / f"{name}-{mode}.png"), full_page=True)
+                ok = overflow <= 0 and not errors and result.get("all_pins_in_view", True) is not False
+                failures += not ok
+                print(f"[{'PASS' if ok else 'FAIL'}] {name} @ {w}px  overflow={overflow}px  console_errors={errors}  {result}")
+                ctx.close()
+        browser.close()
+    sys.exit(1 if failures else 0)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:] or list(SCREENS))

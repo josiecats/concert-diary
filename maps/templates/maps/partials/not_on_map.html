@@ -1,0 +1,22 @@
+{% if not_on_map %}
+<div class="mt-5 rounded-xl border border-rail bg-booth p-5" aria-labelledby="unmapped-heading">
+  <h3 id="unmapped-heading" class="text-lg font-bold">Not on the map</h3>
+  <p class="text-sm text-haze">These shows don't have a location yet.</p>
+  <ul class="mt-3 space-y-3">
+    {% for att in not_on_map %}
+      <li class="flex flex-wrap items-center justify-between gap-3">
+        <span>
+          <span class="font-bold">{{ att.event.artist.name }}</span>
+          <span class="text-haze">at {{ att.event.venue.name }}, {{ att.event.venue.city }}, {{ att.event.event_date|date:"M j, Y" }}</span>
+        </span>
+        {% if is_owner and att.event.venue.created_by_id == user.id %}
+          <a href="{% url 'maps:fix_location' att.event.venue_id %}"
+             hx-get="{% url 'maps:fix_location' att.event.venue_id %}" hx-target="closest li" hx-swap="innerHTML"
+             class="rounded-full border border-riso px-3 py-1.5 text-sm font-bold text-riso hover:bg-riso hover:text-stage"
+             aria-label="Fix location for {{ att.event.venue.name }}">Fix location</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

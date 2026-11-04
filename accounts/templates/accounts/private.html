@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Private profile{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl py-16 text-center">
+  <h1 class="font-poster text-5xl font-900">This profile is private</h1>
+  <p class="mt-3 text-haze">@{{ owner.username }} keeps their concert diary to themselves.</p>
+  <a href="{% url 'home' %}" class="mt-6 inline-block rounded-full border border-rail px-5 py-2.5 hover:bg-booth">Go to Concert Diary</a>
+</section>
+{% endblock %}

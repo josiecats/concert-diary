@@ -1,0 +1,733 @@
+{
+  "_comment": "Mock setlist.fm-shaped data for the prototype. Dates and tours are illustrative, not real setlists.",
+  "setlist": [
+    {
+      "id": "ca7b1672",
+      "eventDate": "18-06-2022",
+      "artist": {
+        "mbid": "ced38a2a-85d0-58ca-bbe4-f918ed8b068a",
+        "name": "Phoebe Bridgers"
+      },
+      "venue": {
+        "id": "0d848768",
+        "name": "Hollywood Bowl",
+        "city": {
+          "name": "Los Angeles",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 34.0522,
+            "long": -118.2437
+          }
+        }
+      },
+      "tour": {
+        "name": "Reunion Tour"
+      }
+    },
+    {
+      "id": "92d3b53b",
+      "eventDate": "02-03-2018",
+      "artist": {
+        "mbid": "ced38a2a-85d0-58ca-bbe4-f918ed8b068a",
+        "name": "Phoebe Bridgers"
+      },
+      "venue": {
+        "id": "333f7376",
+        "name": "Brooklyn Steel",
+        "city": {
+          "name": "New York",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 40.7128,
+            "long": -74.006
+          }
+        }
+      },
+      "tour": {
+        "name": "Stranger in the Alps Tour"
+      }
+    },
+    {
+      "id": "0d605433",
+      "eventDate": "07-05-2022",
+      "artist": {
+        "mbid": "ced38a2a-85d0-58ca-bbe4-f918ed8b068a",
+        "name": "Phoebe Bridgers"
+      },
+      "venue": {
+        "id": "a1551454",
+        "name": "Massey Hall",
+        "city": {
+          "name": "Toronto",
+          "country": {
+            "code": "CA",
+            "name": "Canada"
+          },
+          "coords": {
+            "lat": 43.6532,
+            "long": -79.3832
+          }
+        }
+      },
+      "tour": {
+        "name": "Reunion Tour"
+      }
+    },
+    {
+      "id": "ce93038b",
+      "eventDate": "04-08-2023",
+      "artist": {
+        "mbid": "87dfed91-99ff-504c-aef4-eeed8ddbf547",
+        "name": "boygenius"
+      },
+      "venue": {
+        "id": "4e2d04ed",
+        "name": "Madison Square Garden",
+        "city": {
+          "name": "New York",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 40.7128,
+            "long": -74.006
+          }
+        }
+      },
+      "tour": {
+        "name": "The Tour"
+      }
+    },
+    {
+      "id": "884cce39",
+      "eventDate": "21-10-2023",
+      "artist": {
+        "mbid": "87dfed91-99ff-504c-aef4-eeed8ddbf547",
+        "name": "boygenius"
+      },
+      "venue": {
+        "id": "0d848768",
+        "name": "Hollywood Bowl",
+        "city": {
+          "name": "Los Angeles",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 34.0522,
+            "long": -118.2437
+          }
+        }
+      },
+      "tour": {
+        "name": "The Tour"
+      }
+    },
+    {
+      "id": "9f92d3bc",
+      "eventDate": "12-04-2022",
+      "artist": {
+        "mbid": "5601076d-63d5-5433-a1c3-d36abbed5950",
+        "name": "Big Thief"
+      },
+      "venue": {
+        "id": "b17a7688",
+        "name": "Union Transfer",
+        "city": {
+          "name": "Philadelphia",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 39.9526,
+            "long": -75.1652
+          }
+        }
+      },
+      "tour": {
+        "name": "Dragon New Mountain Tour"
+      }
+    },
+    {
+      "id": "1013f34d",
+      "eventDate": "02-11-2019",
+      "artist": {
+        "mbid": "5601076d-63d5-5433-a1c3-d36abbed5950",
+        "name": "Big Thief"
+      },
+      "venue": {
+        "id": "b33ce7ba",
+        "name": "Metro",
+        "city": {
+          "name": "Chicago",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 41.8781,
+            "long": -87.6298
+          }
+        }
+      },
+      "tour": {
+        "name": "Two Hands Tour"
+      }
+    },
+    {
+      "id": "cba2c06a",
+      "eventDate": "25-02-2023",
+      "artist": {
+        "mbid": "5601076d-63d5-5433-a1c3-d36abbed5950",
+        "name": "Big Thief"
+      },
+      "venue": {
+        "id": "9d0bcc48",
+        "name": "O2 Academy Brixton",
+        "city": {
+          "name": "London",
+          "country": {
+            "code": "GB",
+            "name": "United Kingdom"
+          },
+          "coords": {
+            "lat": 51.5074,
+            "long": -0.1278
+          }
+        }
+      }
+    },
+    {
+      "id": "5bb71453",
+      "eventDate": "14-10-2017",
+      "artist": {
+        "mbid": "82937120-119c-52e7-9447-77fb03efe6f0",
+        "name": "Japanese Breakfast"
+      },
+      "venue": {
+        "id": "51f0f946",
+        "name": "The Westcott Theater",
+        "city": {
+          "name": "Syracuse",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 43.0481,
+            "long": -76.1474
+          }
+        }
+      },
+      "tour": {
+        "name": "Soft Sounds Tour"
+      }
+    },
+    {
+      "id": "1b352d4a",
+      "eventDate": "09-10-2021",
+      "artist": {
+        "mbid": "82937120-119c-52e7-9447-77fb03efe6f0",
+        "name": "Japanese Breakfast"
+      },
+      "venue": {
+        "id": "972fd60d",
+        "name": "Stubb's BBQ",
+        "city": {
+          "name": "Austin",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 30.2672,
+            "long": -97.7431
+          }
+        }
+      },
+      "tour": {
+        "name": "Jubilee Tour"
+      }
+    },
+    {
+      "id": "74cbbd63",
+      "eventDate": "11-05-2024",
+      "artist": {
+        "mbid": "82937120-119c-52e7-9447-77fb03efe6f0",
+        "name": "Japanese Breakfast"
+      },
+      "venue": {
+        "id": "b17a7688",
+        "name": "Union Transfer",
+        "city": {
+          "name": "Philadelphia",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 39.9526,
+            "long": -75.1652
+          }
+        }
+      }
+    },
+    {
+      "id": "ef2f2378",
+      "eventDate": "27-07-2018",
+      "artist": {
+        "mbid": "71129ce5-3b1c-5fd1-bf8a-a903d5c47705",
+        "name": "Radiohead"
+      },
+      "venue": {
+        "id": "4e2d04ed",
+        "name": "Madison Square Garden",
+        "city": {
+          "name": "New York",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 40.7128,
+            "long": -74.006
+          }
+        }
+      },
+      "tour": {
+        "name": "A Moon Shaped Pool Tour"
+      }
+    },
+    {
+      "id": "7d664239",
+      "eventDate": "20-05-2016",
+      "artist": {
+        "mbid": "71129ce5-3b1c-5fd1-bf8a-a903d5c47705",
+        "name": "Radiohead"
+      },
+      "venue": {
+        "id": "f909e1ef",
+        "name": "Manchester Academy",
+        "city": {
+          "name": "Manchester",
+          "country": {
+            "code": "GB",
+            "name": "United Kingdom"
+          },
+          "coords": {
+            "lat": 53.4808,
+            "long": -2.2426
+          }
+        }
+      },
+      "tour": {
+        "name": "A Moon Shaped Pool Tour"
+      }
+    },
+    {
+      "id": "f6ba7970",
+      "eventDate": "03-12-2021",
+      "artist": {
+        "mbid": "fa28c240-e373-593b-a6f2-0ed9fa1837ac",
+        "name": "LCD Soundsystem"
+      },
+      "venue": {
+        "id": "333f7376",
+        "name": "Brooklyn Steel",
+        "city": {
+          "name": "New York",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 40.7128,
+            "long": -74.006
+          }
+        }
+      },
+      "tour": {
+        "name": "Holiday Residency"
+      }
+    },
+    {
+      "id": "8aa44893",
+      "eventDate": "10-02-2018",
+      "artist": {
+        "mbid": "fa28c240-e373-593b-a6f2-0ed9fa1837ac",
+        "name": "LCD Soundsystem"
+      },
+      "venue": {
+        "id": "9d0bcc48",
+        "name": "O2 Academy Brixton",
+        "city": {
+          "name": "London",
+          "country": {
+            "code": "GB",
+            "name": "United Kingdom"
+          },
+          "coords": {
+            "lat": 51.5074,
+            "long": -0.1278
+          }
+        }
+      },
+      "tour": {
+        "name": "American Dream Tour"
+      }
+    },
+    {
+      "id": "dcb52849",
+      "eventDate": "09-03-2024",
+      "artist": {
+        "mbid": "9c4c2d92-ba44-5bc8-8222-2c518d2a5c11",
+        "name": "Mitski"
+      },
+      "venue": {
+        "id": "c91b53d3",
+        "name": "Royal Albert Hall",
+        "city": {
+          "name": "London",
+          "country": {
+            "code": "GB",
+            "name": "United Kingdom"
+          },
+          "coords": {
+            "lat": 51.5074,
+            "long": -0.1278
+          }
+        }
+      },
+      "tour": {
+        "name": "The Land Is Inhospitable Tour"
+      }
+    },
+    {
+      "id": "cd79c16a",
+      "eventDate": "30-03-2019",
+      "artist": {
+        "mbid": "9c4c2d92-ba44-5bc8-8222-2c518d2a5c11",
+        "name": "Mitski"
+      },
+      "venue": {
+        "id": "b33ce7ba",
+        "name": "Metro",
+        "city": {
+          "name": "Chicago",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 41.8781,
+            "long": -87.6298
+          }
+        }
+      },
+      "tour": {
+        "name": "Be the Cowboy Tour"
+      }
+    },
+    {
+      "id": "80df2898",
+      "eventDate": "15-04-2022",
+      "artist": {
+        "mbid": "9c4c2d92-ba44-5bc8-8222-2c518d2a5c11",
+        "name": "Mitski"
+      },
+      "venue": {
+        "id": "972fd60d",
+        "name": "Stubb's BBQ",
+        "city": {
+          "name": "Austin",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 30.2672,
+            "long": -97.7431
+          }
+        }
+      },
+      "tour": {
+        "name": "Laurel Hell Tour"
+      }
+    },
+    {
+      "id": "aaa49e3b",
+      "eventDate": "16-11-2024",
+      "artist": {
+        "mbid": "8350ea1e-8788-578a-a241-d4ab99b85cab",
+        "name": "Fontaines D.C."
+      },
+      "venue": {
+        "id": "f909e1ef",
+        "name": "Manchester Academy",
+        "city": {
+          "name": "Manchester",
+          "country": {
+            "code": "GB",
+            "name": "United Kingdom"
+          },
+          "coords": {
+            "lat": 53.4808,
+            "long": -2.2426
+          }
+        }
+      },
+      "tour": {
+        "name": "Romance Tour"
+      }
+    },
+    {
+      "id": "0737089c",
+      "eventDate": "26-05-2022",
+      "artist": {
+        "mbid": "8350ea1e-8788-578a-a241-d4ab99b85cab",
+        "name": "Fontaines D.C."
+      },
+      "venue": {
+        "id": "333f7376",
+        "name": "Brooklyn Steel",
+        "city": {
+          "name": "New York",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 40.7128,
+            "long": -74.006
+          }
+        }
+      },
+      "tour": {
+        "name": "Skinty Fia Tour"
+      }
+    },
+    {
+      "id": "c7679563",
+      "eventDate": "04-04-2023",
+      "artist": {
+        "mbid": "7b033869-b751-519e-af4f-c54dbc1b8194",
+        "name": "Caroline Polachek"
+      },
+      "venue": {
+        "id": "a1551454",
+        "name": "Massey Hall",
+        "city": {
+          "name": "Toronto",
+          "country": {
+            "code": "CA",
+            "name": "Canada"
+          },
+          "coords": {
+            "lat": 43.6532,
+            "long": -79.3832
+          }
+        }
+      },
+      "tour": {
+        "name": "Spiraling Tour"
+      }
+    },
+    {
+      "id": "875f0d86",
+      "eventDate": "22-09-2023",
+      "artist": {
+        "mbid": "e4842f89-cb64-575b-802a-856836ec9635",
+        "name": "Wednesday"
+      },
+      "venue": {
+        "id": "51f0f946",
+        "name": "The Westcott Theater",
+        "city": {
+          "name": "Syracuse",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 43.0481,
+            "long": -76.1474
+          }
+        }
+      },
+      "tour": {
+        "name": "Rat Saw God Tour"
+      }
+    },
+    {
+      "id": "937c1e65",
+      "eventDate": "28-09-2019",
+      "artist": {
+        "mbid": "956590b3-27a0-5048-97a0-5fb96a9a3294",
+        "name": "The National"
+      },
+      "venue": {
+        "id": "04c42d66",
+        "name": "JMA Wireless Dome",
+        "city": {
+          "name": "Syracuse",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 43.0481,
+            "long": -76.1474
+          }
+        }
+      },
+      "tour": {
+        "name": "I Am Easy to Find Tour"
+      }
+    },
+    {
+      "id": "5a62083b",
+      "eventDate": "24-05-2023",
+      "artist": {
+        "mbid": "956590b3-27a0-5048-97a0-5fb96a9a3294",
+        "name": "The National"
+      },
+      "venue": {
+        "id": "c91b53d3",
+        "name": "Royal Albert Hall",
+        "city": {
+          "name": "London",
+          "country": {
+            "code": "GB",
+            "name": "United Kingdom"
+          },
+          "coords": {
+            "lat": 51.5074,
+            "long": -0.1278
+          }
+        }
+      }
+    },
+    {
+      "id": "5695b153",
+      "eventDate": "15-03-2025",
+      "artist": {
+        "mbid": "b281cf96-ed2b-5f70-95fc-7dcc8a63a7d0",
+        "name": "Sharon Van Etten"
+      },
+      "venue": {
+        "id": "b17a7688",
+        "name": "Union Transfer",
+        "city": {
+          "name": "Philadelphia",
+          "country": {
+            "code": "US",
+            "name": "United States"
+          },
+          "coords": {
+            "lat": 39.9526,
+            "long": -75.1652
+          }
+        }
+      }
+    }
+  ],
+  "geocoding": {
+    "venues": {
+      "Madison Square Garden|New York": [
+        40.7505,
+        -73.9934
+      ],
+      "Brooklyn Steel|New York": [
+        40.7191,
+        -73.9387
+      ],
+      "Metro|Chicago": [
+        41.9496,
+        -87.6589
+      ],
+      "Hollywood Bowl|Los Angeles": [
+        34.1122,
+        -118.3391
+      ],
+      "Stubb's BBQ|Austin": [
+        30.2683,
+        -97.7363
+      ],
+      "Union Transfer|Philadelphia": [
+        39.9612,
+        -75.1554
+      ],
+      "The Westcott Theater|Syracuse": [
+        43.0388,
+        -76.1336
+      ],
+      "JMA Wireless Dome|Syracuse": [
+        43.0362,
+        -76.1364
+      ],
+      "O2 Academy Brixton|London": [
+        51.4652,
+        -0.1146
+      ],
+      "Royal Albert Hall|London": [
+        51.5009,
+        -0.1774
+      ],
+      "Manchester Academy|Manchester": [
+        53.4643,
+        -2.2329
+      ],
+      "Massey Hall|Toronto": [
+        43.654,
+        -79.379
+      ]
+    },
+    "cities": {
+      "New York": [
+        40.7128,
+        -74.006
+      ],
+      "Chicago": [
+        41.8781,
+        -87.6298
+      ],
+      "Los Angeles": [
+        34.0522,
+        -118.2437
+      ],
+      "Austin": [
+        30.2672,
+        -97.7431
+      ],
+      "Philadelphia": [
+        39.9526,
+        -75.1652
+      ],
+      "Syracuse": [
+        43.0481,
+        -76.1474
+      ],
+      "London": [
+        51.5074,
+        -0.1278
+      ],
+      "Manchester": [
+        53.4808,
+        -2.2426
+      ],
+      "Toronto": [
+        43.6532,
+        -79.3832
+      ]
+    }
+  }
+}

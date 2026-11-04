@@ -1,0 +1,41 @@
+{% load diary %}{% if top3 or is_owner %}
+<section id="top3" class="mt-12" aria-labelledby="top3-heading">
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <h2 id="top3-heading" class="font-poster text-4xl font-800">Top 3</h2>
+    {% if is_owner %}
+      <a href="{% url 'shows:top3' %}" class="font-bold text-riso underline underline-offset-4">Edit Top 3</a>
+    {% endif %}
+  </div>
+
+  <ol class="mt-4 grid gap-4 sm:grid-cols-3">
+    {% for att in top3 %}
+      <li>
+        <a href="{% url 'shows:detail' att.event_id %}"
+           class="poster flex min-h-[15rem] flex-col rounded-md p-5 text-stage shadow-[6px_6px_0_0_#43355A] sm:aspect-[4/5] sm:min-h-0
+                  {% if att.top3_rank == 1 %}bg-marquee{% elif att.top3_rank == 2 %}bg-riso{% else %}bg-paper{% endif %}"
+           aria-label="Number {{ att.top3_rank }}: {{ att.event.artist.name }} at {{ att.event.venue.name }}, {{ att.event.event_date|date:'M j, Y' }}">
+          <span class="font-poster text-2xl font-900" aria-hidden="true">No. {{ att.top3_rank }}</span>
+          <span class="poster-title mt-3 font-poster text-[clamp(2.6rem,9vw,4.25rem)] font-900 uppercase leading-[0.85] sm:text-[clamp(2.4rem,5.2vw,4.75rem)]">{{ att.event.artist.name }}</span>
+          {% if att.event.tour_name %}<span class="mt-2 font-poster text-xl font-800 leading-tight sm:text-2xl">{{ att.event.tour_name }}</span>{% endif %}
+          {% if att.rating %}<span class="mt-3 inline-flex self-start rounded-full bg-stage px-2.5 py-1">{% stars att.rating "1.1rem" %}</span>{% endif %}
+          <span class="mt-auto block border-t-[3px] border-stage pt-3 font-bold leading-snug">
+            <span class="block">{{ att.event.venue.name }}</span>
+            <span class="block">{{ att.event.venue.city }}</span>
+            <time class="block" datetime="{{ att.event.event_date|date:'Y-m-d' }}">{{ att.event.event_date|date:"M j, Y" }}</time>
+          </span>
+        </a>
+      </li>
+    {% endfor %}
+    {% if is_owner %}
+      {% if top3|length < 3 %}
+        <li>
+          <a href="{% url 'shows:top3' %}" class="flex h-full min-h-[10rem] flex-col items-start justify-center rounded-md border-2 border-dashed border-rail p-5 text-haze hover:border-riso hover:text-paper sm:aspect-[4/5]">
+            <span class="font-poster text-3xl font-800">{% if top3 %}Add another{% else %}Pick your Top 3{% endif %}</span>
+            <span class="mt-1">Choose the shows that mattered most.</span>
+          </a>
+        </li>
+      {% endif %}
+    {% endif %}
+  </ol>
+</section>
+{% endif %}

@@ -1,0 +1,20 @@
+<section id="stats" class="mt-12" aria-label="Lifetime stats">
+  <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-rail bg-rail sm:grid-cols-4">
+    <div class="flex flex-col-reverse bg-stage px-5 py-4">
+      <dt class="text-haze">{% if stats.shows == 1 %}show{% else %}shows{% endif %}</dt>
+      <dd class="font-poster text-5xl font-800 leading-none" data-stat="shows">{{ stats.shows }}</dd>
+    </div>
+    <div class="flex flex-col-reverse bg-stage px-5 py-4">
+      <dt class="text-haze">{% if stats.artists == 1 %}artist{% else %}artists{% endif %}</dt>
+      <dd class="font-poster text-5xl font-800 leading-none" data-stat="artists">{{ stats.artists }}</dd>
+    </div>
+    <div class="flex flex-col-reverse bg-stage px-5 py-4">
+      <dt class="text-haze">{% if stats.venues == 1 %}venue{% else %}venues{% endif %}</dt>
+      <dd class="font-poster text-5xl font-800 leading-none" data-stat="venues">{{ stats.venues }}</dd>
+    </div>
+    <div class="flex flex-col-reverse bg-stage px-5 py-4">
+      <dt class="text-haze">{% if stats.cities == 1 %}city{% else %}cities{% endif %}</dt>
+      <dd class="font-poster text-5xl font-800 leading-none" data-stat="cities">{{ stats.cities }}</dd>
+    </div>
+  </dl>
+</section>

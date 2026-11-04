@@ -1,0 +1,101 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Concert Diary{% endblock %}</title>
+  <meta name="htmx-config" content='{"responseHandling":[{"code":"204","swap":false},{"code":"[23]..","swap":true},{"code":"409","swap":true,"error":false},{"code":"422","swap":true,"error":false},{"code":"[45]..","swap":false,"error":true}]}'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            stage: "#1D1428",     // page background: deep plum, like a darkened venue
+            booth: "#2A1F38",     // raised surfaces
+            rail: "#43355A",      // borders and dividers
+            paper: "#F2EBDD",     // newsprint text
+            haze: "#B3A6C4",      // secondary text
+            riso: "#FF5C93",      // fluorescent pink ink: actions, pins
+            marquee: "#FFC94D",   // yellow ink: stars and Top 3
+          },
+          fontFamily: {
+            poster: ['"Big Shoulders Display"', "Impact", "sans-serif"],
+            sans: ['"Atkinson Hyperlegible"', "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-stage font-sans text-paper antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-paper focus:px-3 focus:py-2 focus:text-stage">Skip to content</a>
+
+  <header class="border-b border-rail">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3" aria-label="Main">
+      <a href="{% url 'home' %}" class="font-poster text-2xl font-900 leading-none tracking-tight text-paper hover:text-riso">
+        Concert Diary
+      </a>
+
+      {% if user.is_authenticated %}
+        {% with request.resolver_match.url_name as here %}
+        <ul class="hidden items-center gap-1 text-sm md:flex">
+          <li><a href="{% url 'accounts:profile' user.username %}" class="navlink" {% if here == 'profile' %}aria-current="page"{% endif %}>Profile</a></li>
+          <li><a href="{% url 'shows:diary' user.username %}" class="navlink" {% if here == 'diary' %}aria-current="page"{% endif %}>Diary</a></li>
+          <li><a href="{% url 'accounts:settings' %}" class="navlink" {% if here == 'settings' %}aria-current="page"{% endif %}>Settings</a></li>
+          <li>
+            <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}
+              <button type="submit" class="navlink">Log out</button>
+            </form>
+          </li>
+          <li><a href="{% url 'shows:search' %}" class="ml-2 rounded-full bg-riso px-4 py-2 font-bold text-stage hover:bg-paper" {% if here == 'search' %}aria-current="page"{% endif %}>Log a show</a></li>
+        </ul>
+
+        <details class="relative md:hidden">
+          <summary class="cursor-pointer list-none rounded-full border border-rail px-4 py-2 text-sm" aria-label="Open menu">Menu</summary>
+          <ul class="absolute right-0 z-[1000] mt-2 w-56 rounded-lg border border-rail bg-booth p-2 text-base shadow-xl">
+            <li><a href="{% url 'shows:search' %}" class="block rounded px-3 py-2 font-bold text-riso hover:bg-rail">Log a show</a></li>
+            <li><a href="{% url 'accounts:profile' user.username %}" class="block rounded px-3 py-2 hover:bg-rail">Profile</a></li>
+            <li><a href="{% url 'shows:diary' user.username %}" class="block rounded px-3 py-2 hover:bg-rail">Diary</a></li>
+            <li><a href="{% url 'accounts:settings' %}" class="block rounded px-3 py-2 hover:bg-rail">Settings</a></li>
+            <li>
+              <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}
+                <button type="submit" class="block w-full rounded px-3 py-2 text-left hover:bg-rail">Log out</button>
+              </form>
+            </li>
+          </ul>
+        </details>
+        {% endwith %}
+      {% else %}
+        <ul class="flex items-center gap-1 text-sm">
+          <li><a href="{% url 'account_login' %}" class="navlink">Log in</a></li>
+          <li><a href="{% url 'account_signup' %}" class="rounded-full bg-riso px-4 py-2 font-bold text-stage hover:bg-paper">Sign up</a></li>
+        </ul>
+      {% endif %}
+    </nav>
+  </header>
+
+  {% if messages %}
+    <div class="mx-auto max-w-6xl px-4 pt-4" role="status">
+      {% for message in messages %}
+        <p class="rounded-lg border border-rail bg-booth px-4 py-3 text-sm">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="main" class="mx-auto max-w-6xl px-4 pb-20 pt-6 sm:pt-10">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-rail">
+    <p class="mx-auto max-w-6xl px-4 py-6 text-sm text-haze">Prototype with demo data. Map tiles from OpenStreetMap contributors.</p>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

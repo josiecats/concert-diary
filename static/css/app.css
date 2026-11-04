@@ -1,0 +1,97 @@
+/* Small layer on top of Tailwind for things utility classes can't express cleanly. */
+
+:root { color-scheme: dark; }
+
+.font-900 { font-weight: 900; }
+.font-800 { font-weight: 800; }
+
+:focus-visible {
+  outline: 3px solid #FF5C93;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.navlink {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 0.5rem 0.85rem;
+  color: #F2EBDD;
+}
+.navlink:hover { background: #2A1F38; }
+.navlink[aria-current="page"] { text-decoration: underline; text-decoration-color: #FF5C93; text-underline-offset: 6px; text-decoration-thickness: 3px; }
+
+details > summary::-webkit-details-marker { display: none; }
+
+/* Form fields: one consistent look. */
+.field {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #43355A;
+  background: #1D1428;
+  padding: 0.6rem 0.8rem;
+  color: #F2EBDD;
+}
+.field::placeholder { color: #8D7FA0; }
+.field:focus { border-color: #FF5C93; outline: none; box-shadow: 0 0 0 3px rgba(255, 92, 147, 0.35); }
+.label { display: block; margin-bottom: 0.35rem; font-size: 0.9rem; font-weight: 700; }
+.errorlist { margin-top: 0.35rem; color: #FF8FB3; font-size: 0.9rem; }
+
+/* Top 3 gig posters: riso grain and misregistered ink. */
+.poster {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.poster-title {
+  text-shadow: 3px 3px 0 rgba(29, 20, 40, 0.28);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+/* Half-star rating input: 10 radio buttons rendered as 5 stars. */
+.stars { display: inline-flex; flex-direction: row-reverse; }
+.stars input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.stars label {
+  width: 1.1rem; height: 2.2rem; cursor: pointer;
+  background: #43355A;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z'/></svg>") no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z'/></svg>") no-repeat;
+  -webkit-mask-size: 2.2rem 2.2rem; mask-size: 2.2rem 2.2rem;
+}
+.stars label.half-left { -webkit-mask-position: left center; mask-position: left center; }
+.stars label.half-right { -webkit-mask-position: right center; mask-position: right center; margin-right: 0.2rem; }
+.stars input:checked ~ label,
+.stars label:hover,
+.stars label:hover ~ label { background: #FFC94D; }
+.stars:hover input:checked ~ label:not(:hover):not(:hover ~ label) { background: #43355A; }
+.stars input:focus-visible + label { outline: 3px solid #FF5C93; outline-offset: 1px; }
+
+/* Leaflet: darken OSM tiles to sit in the plum palette. */
+.map-dark .leaflet-tile-pane { filter: invert(1) hue-rotate(200deg) brightness(0.8) contrast(0.95) saturate(0.6); }
+.map-dark { background: #1D1428; }
+.map-dark .leaflet-popup-content-wrapper, .map-dark .leaflet-popup-tip { background: #2A1F38; color: #F2EBDD; }
+.map-dark .leaflet-popup-content { font-family: "Atkinson Hyperlegible", system-ui, sans-serif; margin: 12px 14px; }
+.map-dark .leaflet-popup-content a { color: #FF5C93; }
+.map-dark.leaflet-container a.leaflet-popup-close-button { color: #B3A6C4; }
+.pin-count {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 9999px; background: #FF5C93; color: #1D1428;
+  font-weight: 700; font-size: 12px; border: 2px solid #1D1428;
+  box-shadow: 0 0 0 3px rgba(255, 92, 147, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+.htmx-request.htmx-indicator, .htmx-request .htmx-indicator { opacity: 1; }
+.htmx-indicator { opacity: 0; transition: opacity 150ms; }
