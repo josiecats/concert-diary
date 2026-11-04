@@ -99,7 +99,32 @@ def check_diary(page, mode):
             "live_update": rows_before == 15 and first == "5 out of 5 stars" and 0 < rows_2023 < 15}
 
 
+def check_detail(page, mode):
+    # Big Thief at O2 Academy Brixton starts unrated in the seed.
+    page.goto(f"{BASE}/u/demo/diary/")
+    page.click("text=Rate and review")
+    page.wait_for_load_state("networkidle")
+    page.locator(".stars label[title='4.5 stars']").click()
+    page.wait_for_selector("[role=status]:has-text('Saved: 4.5 stars.')")
+    # Keyboard: arrow right from 4.5 should go up to 5, the same direction the stars read.
+    page.focus(".stars input:checked")
+    page.keyboard.press("ArrowRight")
+    page.wait_for_selector("[role=status]:has-text('Saved: 5 stars.')")
+    page.mouse.move(0, 0)  # drop the hover preview before measuring
+    page.wait_for_timeout(200)
+    filled = page.evaluate("""() => [...document.querySelectorAll('.stars label.star')]
+        .filter(l => getComputedStyle(l).backgroundColor === 'rgb(255, 201, 77)').length""")
+    page.click("text=Write a review")
+    page.fill("textarea[name=review]", "Brixton floor was bouncing. Front row the whole night.")
+    page.click("button:has-text('Save review')")
+    page.wait_for_selector("text=Review saved.")
+    page.mouse.move(0, 0)
+    page.wait_for_timeout(300)
+    return {"filled_halves": filled, "live_update": filled == 10}
+
+
 SCREENS = {
+    "detail": (True, check_detail),
     "diary": (True, check_diary),
     "profile": (False, check_profile),
     "search": (True, check_search),

@@ -1,0 +1,22 @@
+{% load diary %}
+<form id="rating-{{ att.pk }}" method="post" action="{% url 'shows:rate' att.pk %}"
+      hx-post="{% url 'shows:rate' att.pk %}" hx-trigger="change" hx-target="this" hx-swap="outerHTML">
+  {% csrf_token %}
+  <fieldset>
+    <legend class="label">Your rating</legend>
+    <div class="stars">
+      <input name="rating" type="radio" id="rate-{{ att.pk }}-none" value="" {% if att.rating is None %}checked{% endif %}>
+      <label for="rate-{{ att.pk }}-none" class="clear">No rating</label>
+      {% for value in rating_values %}
+        <input name="rating" type="radio" id="rate-{{ att.pk }}-{{ forloop.counter }}" value="{{ value }}" {% if att.rating == value %}checked{% endif %}>
+        <label for="rate-{{ att.pk }}-{{ forloop.counter }}" class="star {% cycle 'left' 'right' %}" title="{{ value|rating_display }} stars"><span class="sr-only">{{ value|rating_display }} stars</span></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <p class="mt-1 min-h-[1.25rem] text-sm" role="status">
+    {% if error %}<span class="text-riso">{{ error }}</span>
+    {% elif saved %}<span class="text-emerald-300">{% if att.rating %}Saved: {{ att.rating|rating_display }} stars.{% else %}Rating cleared.{% endif %}</span>
+    {% endif %}
+  </p>
+  <noscript><button type="submit" class="rounded-full border border-rail px-4 py-1.5 text-sm">Save rating</button></noscript>
+</form>

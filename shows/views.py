@@ -1,8 +1,10 @@
 import json
+from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
-from django.db.models import F
+from django.db.models import F, Q
+from django.utils import timezone
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -13,7 +15,7 @@ from services import geocoding, setlistfm
 
 from . import top3
 from .forms import ManualShowForm, SearchForm
-from .models import Artist, Attendance, Event, Venue
+from .models import RATING_CHOICES, REVIEW_MAX_LENGTH, Artist, Attendance, Event, Venue
 
 
 def _is_htmx(request):
@@ -117,7 +119,7 @@ def diary(request, username):
     return render(request, template, context)
 
 
-detail = rate = review = edit = delete = _coming_soon
+edit = delete = _coming_soon
 
 
 # Screen 3: search and log (US-3, US-4, US-5) ---------------------------------------------
@@ -223,3 +225,92 @@ def add_manual(request):
             Attendance.objects.create(user=request.user, event=event, rating=d["rating"], review=d["review"])
         return redirect("shows:detail", event.pk)
     return render(request, "shows/add_manual.html", {"form": form})
+
+
+# Screen 5: show detail, rate and review (US-7) ------------------------------------------
+
+def detail(request, event_id):
+    event = get_object_or_404(Event.objects.select_related("artist", "venue"), pk=event_id)
+    mine = None
+    if request.user.is_authenticated:
+        mine = Attendance.objects.filter(user=request.user, event=event).first()
+    others = (
+        Attendance.objects.with_related()
+        .filter(event=event)
+        .exclude(review="")
+        .exclude(user=request.user.pk)
+        .filter(review_hidden=False, user__profile__is_private=False)
+        .order_by("-created_at")
+    )
+    fans = Attendance.objects.filter(event=event, user__profile__is_private=False)
+    if request.user.is_authenticated:
+        fans = Attendance.objects.filter(event=event).filter(
+            Q(user__profile__is_private=False) | Q(user=request.user)
+        )
+    return render(request, "shows/detail.html", {
+        "event": event,
+        "att": mine,
+        "other_reviews": others,
+        "fan_count": fans.count(),
+        "rating_values": RATING_CHOICES,
+        "log_result": {"id": event.setlistfm_id, "artist_name": event.artist.name,
+                       "venue_name": event.venue.name, "event_date": event.event_date},
+    })
+
+
+def _parse_rating(raw):
+    """'' clears the rating; anything else must be a half step from 0.5 to 5."""
+    if raw in ("", None):
+        return None, True
+    try:
+        value = Decimal(raw)
+    except InvalidOperation:
+        return None, False
+    return value, value in RATING_CHOICES
+
+
+@login_required
+@require_POST
+def rate(request, pk):
+    att = _own_attendance(request, pk)
+    value, ok = _parse_rating(request.POST.get("rating"))
+    context = {"att": att, "rating_values": RATING_CHOICES}
+    if not ok:
+        context["error"] = "Pick a rating from half a star to five stars."
+        return render(request, "shows/partials/star_rating.html", context, status=422)
+    att.rating = value
+    att.save(update_fields=["rating", "updated_at"])
+    if not _is_htmx(request):
+        return redirect("shows:detail", att.event_id)
+    context["saved"] = True
+    return render(request, "shows/partials/star_rating.html", context)
+
+
+def save_review(att, text):
+    """Store a review; changing an existing one stamps the "edited" label (US-8)."""
+    text = text.strip()
+    if att.review and text != att.review:
+        att.review_edited_at = timezone.now()
+    att.review = text
+    if not text:
+        att.review_edited_at = None
+    att.save(update_fields=["review", "review_edited_at", "updated_at"])
+
+
+@login_required
+def review(request, pk):
+    att = _own_attendance(request, pk)
+    context = {"att": att, "max_length": REVIEW_MAX_LENGTH}
+    if request.method == "POST":
+        text = request.POST.get("review", "")
+        if len(text.strip()) > REVIEW_MAX_LENGTH:
+            context.update(editing=True, draft=text,
+                           error=f"Reviews can be up to 5,000 characters. This one is {len(text.strip()):,}.")
+            return render(request, "shows/partials/review_block.html", context, status=422)
+        save_review(att, text)
+        if not _is_htmx(request):
+            return redirect("shows:detail", att.event_id)
+        context["saved"] = True
+    else:
+        context["editing"] = True
+    return render(request, "shows/partials/review_block.html", context)

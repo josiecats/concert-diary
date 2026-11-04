@@ -57,23 +57,29 @@ details > summary::-webkit-details-marker { display: none; }
   hyphens: auto;
 }
 
-/* Half-star rating input: 10 radio buttons rendered as 5 stars. */
-.stars { display: inline-flex; flex-direction: row-reverse; }
-.stars input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.stars label {
-  width: 1.1rem; height: 2.2rem; cursor: pointer;
-  background: #43355A;
+/* Half-star rating input: 10 radios (0.5..5) in ascending order, drawn as 5 stars.
+   Ascending order keeps arrow keys intuitive; :has() fills every star up to the checked one. */
+.stars { display: inline-flex; align-items: center; }
+.stars input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.stars label.star {
+  width: 1.2rem; height: 2.4rem; cursor: pointer; background: #43355A;
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z'/></svg>") no-repeat;
   mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z'/></svg>") no-repeat;
-  -webkit-mask-size: 2.2rem 2.2rem; mask-size: 2.2rem 2.2rem;
+  -webkit-mask-size: 2.4rem 2.4rem; mask-size: 2.4rem 2.4rem;
 }
-.stars label.half-left { -webkit-mask-position: left center; mask-position: left center; }
-.stars label.half-right { -webkit-mask-position: right center; mask-position: right center; margin-right: 0.2rem; }
-.stars input:checked ~ label,
-.stars label:hover,
-.stars label:hover ~ label { background: #FFC94D; }
-.stars:hover input:checked ~ label:not(:hover):not(:hover ~ label) { background: #43355A; }
-.stars input:focus-visible + label { outline: 3px solid #FF5C93; outline-offset: 1px; }
+.stars label.star.left { -webkit-mask-position: left center; mask-position: left center; }
+.stars label.star.right { -webkit-mask-position: right center; mask-position: right center; margin-right: 0.25rem; }
+.stars label.star:has(~ input:checked),
+.stars input:checked + label.star { background: #FFC94D; }
+.stars:hover label.star { background: #43355A; }
+.stars:hover label.star:hover,
+.stars:hover label.star:has(~ label.star:hover) { background: #FFE08F; }
+.stars input:focus-visible + label { outline: 3px solid #FF5C93; outline-offset: 2px; border-radius: 2px; }
+.stars label.clear {
+  margin-right: 0.75rem; border: 1px solid #43355A; border-radius: 9999px; padding: 0.3rem 0.7rem;
+  font-size: 0.8rem; color: #B3A6C4; cursor: pointer;
+}
+.stars input:checked + label.clear { border-color: #F2EBDD; color: #F2EBDD; }
 
 /* Leaflet: darken OSM tiles to sit in the plum palette. */
 .map-dark .leaflet-tile-pane { filter: invert(1) hue-rotate(200deg) brightness(0.8) contrast(0.95) saturate(0.6); }

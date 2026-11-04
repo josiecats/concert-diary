@@ -1,0 +1,28 @@
+<div id="review-{{ att.pk }}">
+  {% if editing %}
+    <form method="post" action="{% url 'shows:review' att.pk %}"
+          hx-post="{% url 'shows:review' att.pk %}" hx-target="#review-{{ att.pk }}" hx-swap="outerHTML">
+      {% csrf_token %}
+      <label for="review-text-{{ att.pk }}" class="label">Your review</label>
+      <textarea id="review-text-{{ att.pk }}" name="review" rows="7" maxlength="5000" class="field"
+                aria-describedby="review-help-{{ att.pk }}" placeholder="What do you want to remember?">{% if draft %}{{ draft }}{% else %}{{ att.review }}{% endif %}</textarea>
+      <p id="review-help-{{ att.pk }}" class="mt-1 text-sm text-haze">Optional. Up to 5,000 characters.</p>
+      {% if error %}<p class="errorlist" role="alert">{{ error }}</p>{% endif %}
+      <button type="submit" class="mt-3 rounded-full bg-riso px-5 py-2 font-bold text-stage hover:bg-paper">Save review</button>
+    </form>
+  {% else %}
+    <p class="label">Your review</p>
+    {% if att.review %}
+      <div class="max-w-prose space-y-3 text-lg leading-relaxed">{{ att.review|linebreaks }}</div>
+      {% if att.review_edited_at %}<p class="mt-2 text-sm text-haze">Edited {{ att.review_edited_at|date:"M j, Y" }}</p>{% endif %}
+      {% if att.review_hidden %}<p class="mt-2 text-sm text-marquee">A moderator hid this review from others. You can still see it.</p>{% endif %}
+    {% else %}
+      <p class="text-haze">No review yet.</p>
+    {% endif %}
+    <p class="mt-3 flex flex-wrap items-center gap-4">
+      <a href="{% url 'shows:edit' att.pk %}" hx-get="{% url 'shows:review' att.pk %}" hx-target="#review-{{ att.pk }}" hx-swap="outerHTML"
+         class="rounded-full border border-riso px-4 py-1.5 text-sm font-bold text-riso hover:bg-riso hover:text-stage">{% if att.review %}Edit review{% else %}Write a review{% endif %}</a>
+      {% if saved %}<span class="text-sm text-emerald-300" role="status">Review saved.</span>{% endif %}
+    </p>
+  {% endif %}
+</div>
