@@ -88,6 +88,9 @@ LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "account_login"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
+# Prototype: password-reset emails print to the runserver console.
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True

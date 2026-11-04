@@ -148,6 +148,8 @@ def check_edit(page, mode):
     shows = page.inner_text("[data-stat=shows]")
     first_poster = page.locator("#top3 li").first.inner_text().split("\n")[1]
     page.goto(f"{BASE}/u/demo/diary/")
+    page.click("a[aria-label^='Edit your entry for Wednesday']")  # end on the edit form for the screenshot
+    page.wait_for_load_state("networkidle")
     return {"edited_label": edited, "deleted_message": message, "shows": shows, "new_no1": first_poster,
             "live_update": edited >= 1 and message == 1 and shows == "14" and first_poster.upper() == "BIG THIEF"}
 
