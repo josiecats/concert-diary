@@ -80,7 +80,27 @@ def check_search(page, mode):
             "live_update": before != after and reloaded == 1}
 
 
+def check_diary(page, mode):
+    page.goto(f"{BASE}/u/demo/diary/")
+    page.wait_for_load_state("networkidle")
+    rows_before = page.locator("#diary-list li time").count()
+    page.select_option("#diary-sort", "rating")
+    page.wait_for_url("**sort=rating**")
+    page.wait_for_load_state("networkidle")
+    first = page.locator("#diary-list li [role=img]").first.get_attribute("aria-label")
+    page.select_option("#diary-year", "2023")
+    page.wait_for_url("**year=2023**")
+    page.wait_for_load_state("networkidle")
+    rows_2023 = page.locator("#diary-list li time").count()
+    page.select_option("#diary-year", "")
+    page.select_option("#diary-sort", "newest")
+    page.wait_for_load_state("networkidle")
+    return {"rows": rows_before, "top_rated": first, "rows_2023": rows_2023,
+            "live_update": rows_before == 15 and first == "5 out of 5 stars" and 0 < rows_2023 < 15}
+
+
 SCREENS = {
+    "diary": (True, check_diary),
     "profile": (False, check_profile),
     "search": (True, check_search),
 }

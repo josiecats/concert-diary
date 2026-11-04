@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
+from django.db.models import F
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -75,11 +76,45 @@ def top3_remove(request, pk):
 
 # Screen 4: Diary (US-6), filled in properly with its screen ------------------------------
 
+DIARY_SORTS = {
+    "newest": ("Newest first", ["-event__event_date", "-created_at"]),
+    "oldest": ("Oldest first", ["event__event_date", "created_at"]),
+    "rating": ("Highest rated", [F("rating").desc(nulls_last=True), "-event__event_date"]),
+}
+
+
 def diary(request, username):
+    """Every logged show, sortable by date or rating and filterable by year (US-6)."""
     owner, denied = visible_owner(request, username)
     if denied:
         return denied
-    return _coming_soon(request)
+    logs = Attendance.objects.with_related().filter(user=owner)
+    years = sorted({d.year for d in logs.dates("event__event_date", "year")}, reverse=True)
+
+    sort = request.GET.get("sort", "newest")
+    if sort not in DIARY_SORTS:
+        sort = "newest"
+    try:
+        year = int(request.GET.get("year", ""))
+    except ValueError:
+        year = None
+    entries = logs.order_by(*DIARY_SORTS[sort][1])
+    if year:
+        entries = entries.filter(event__event_date__year=year)
+
+    context = {
+        "owner": owner,
+        "profile": owner.profile,
+        "is_owner": request.user == owner,
+        "entries": list(entries),
+        "years": years,
+        "year": year,
+        "sort": sort,
+        "sorts": [(key, label) for key, (label, _) in DIARY_SORTS.items()],
+        "total": logs.count(),
+    }
+    template = "shows/partials/diary_list.html" if _is_htmx(request) else "shows/diary.html"
+    return render(request, template, context)
 
 
 detail = rate = review = edit = delete = _coming_soon

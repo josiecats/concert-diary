@@ -1,0 +1,57 @@
+{% load diary %}
+<section id="diary-list" class="mt-8" aria-live="polite" aria-label="Logged shows">
+  {% if entries %}
+    {% if year %}<p class="mb-2 text-sm text-haze">{{ entries|length }} show{{ entries|length|pluralize }} in {{ year }}</p>{% endif %}
+    <ol class="divide-y divide-rail border-y border-rail">
+      {% for att in entries %}
+        {% ifchanged att.event.event_date.year %}
+          {% if sort != "rating" %}
+            <li class="pb-1 pt-6 first:pt-4" aria-hidden="true">
+              <span class="font-poster text-3xl font-900 text-haze">{{ att.event.event_date.year }}</span>
+            </li>
+          {% endif %}
+        {% endifchanged %}
+        <li class="grid grid-cols-[3.75rem_minmax(0,1fr)] gap-x-4 py-4 sm:grid-cols-[5rem_minmax(0,1fr)_auto]">
+          <time datetime="{{ att.event.event_date|date:'Y-m-d' }}" class="font-poster leading-none">
+            <span class="block text-sm font-800 text-riso">{{ att.event.event_date|date:"M" }}</span>
+            <span class="block text-4xl font-900">{{ att.event.event_date|date:"j" }}</span>
+            <span class="block text-sm text-haze">{{ att.event.event_date|date:"Y" }}</span>
+          </time>
+          <div class="min-w-0">
+            <a href="{% url 'shows:detail' att.event_id %}" class="font-poster text-2xl font-800 leading-tight hover:text-riso">{{ att.event.artist.name }}</a>
+            <p class="text-haze">
+              {{ att.event.venue.name }}, {{ att.event.venue.city }}
+              {% if att.event.is_user_added %}<span class="ml-1 rounded-full border border-rail px-2 py-0.5 text-xs text-paper">User-added</span>{% endif %}
+            </p>
+            <div class="mt-1 sm:hidden">{% stars att.rating %}</div>
+            {% if att.review %}
+              {% if not att.review_hidden %}
+                <p class="mt-2 max-w-prose text-paper/90">{{ att.review|truncatechars:180 }}</p>
+              {% elif user.is_authenticated and user.pk == att.user_id %}
+                <p class="mt-2 max-w-prose text-paper/90">{{ att.review|truncatechars:180 }}</p>
+                <p class="mt-1 text-sm text-marquee">Hidden from others by a moderator.</p>
+              {% endif %}
+            {% endif %}
+            {% if is_owner %}
+              <p class="mt-2 flex gap-4 text-sm">
+                <a href="{% url 'shows:detail' att.event_id %}" class="text-riso underline underline-offset-4">{% if att.rating or att.review %}View{% else %}Rate and review{% endif %}</a>
+                <a href="{% url 'shows:edit' att.pk %}" class="text-haze underline underline-offset-4 hover:text-paper" aria-label="Edit your entry for {{ att.event.artist.name }} on {{ att.event.event_date|date:'M j, Y' }}">Edit</a>
+              </p>
+            {% endif %}
+          </div>
+          <div class="hidden sm:block">{% stars att.rating %}</div>
+        </li>
+      {% endfor %}
+    </ol>
+  {% elif total %}
+    <p class="rounded-xl border border-dashed border-rail p-6 text-haze" role="status">No shows logged in {{ year }}. Pick another year or show all years.</p>
+  {% elif is_owner %}
+    <div class="rounded-xl border border-dashed border-rail p-8 text-center">
+      <p class="font-poster text-3xl font-800">Nothing here yet</p>
+      <p class="mt-1 text-haze">Search setlist.fm for a show you've been to.</p>
+      <a href="{% url 'shows:search' %}" class="mt-4 inline-block rounded-full bg-riso px-5 py-2.5 font-bold text-stage hover:bg-paper">Log your first show</a>
+    </div>
+  {% else %}
+    <p class="text-haze">No shows logged yet.</p>
+  {% endif %}
+</section>
