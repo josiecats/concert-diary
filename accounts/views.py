@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
@@ -13,7 +14,8 @@ from .forms import ProfileForm
 def home(request):
     if request.user.is_authenticated:
         return redirect("accounts:profile", request.user.username)
-    return render(request, "accounts/landing.html")
+    demo = get_user_model().objects.filter(username="demo", profile__is_private=False).first()
+    return render(request, "accounts/landing.html", {"demo": demo, "top3": top3.top3_for(demo) if demo else []})
 
 
 def profile(request, username):

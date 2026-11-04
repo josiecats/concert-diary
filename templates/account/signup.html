@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Sign up for Concert Diary{% endblock %}
+{% block content %}
+<div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-start">
+  <section aria-labelledby="signup-pitch">
+    <h1 id="signup-pitch" class="font-poster text-[clamp(3.25rem,12vw,7.5rem)] font-900 uppercase leading-[0.85]">Every show you've ever seen</h1>
+    <p class="mt-5 max-w-prose text-lg text-haze">Log past concerts from setlist.fm in one tap, rate them, pick your Top 3 and watch your map fill up.</p>
+  </section>
+
+  <section aria-labelledby="signup-heading" class="rounded-xl border border-rail bg-booth p-6 sm:p-8">
+    <h2 id="signup-heading" class="font-poster text-4xl font-800">Create your diary</h2>
+    <p class="mt-1 text-sm text-haze">Already have one? <a href="{% url 'account_login' %}{% if redirect_field_value %}?{{ redirect_field_name }}={{ redirect_field_value|urlencode }}{% endif %}" class="font-bold text-riso underline underline-offset-4">Log in</a></p>
+
+    <div class="mt-6">{% include "account/_google_stub.html" %}</div>
+    <p class="my-6 flex items-center gap-3 text-sm text-haze" aria-hidden="true"><span class="h-px flex-1 bg-rail"></span>or with email<span class="h-px flex-1 bg-rail"></span></p>
+
+    <form method="post" action="{% url 'account_signup' %}" class="space-y-4" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<p class="rounded-lg border border-riso px-3 py-2 text-sm" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
+      <div>
+        <label for="id_email" class="label">Email</label>
+        <input id="id_email" name="email" type="email" autocomplete="email" required class="field" value="{{ form.email.value|default:'' }}"
+               {% if form.email.errors %}aria-invalid="true" aria-describedby="email-error"{% endif %}>
+        {% for e in form.email.errors %}<p id="email-error" class="errorlist">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="id_username" class="label">Username</label>
+        <input id="id_username" name="username" type="text" autocomplete="username" required class="field" value="{{ form.username.value|default:'' }}"
+               aria-describedby="username-help{% if form.username.errors %} username-error{% endif %}" {% if form.username.errors %}aria-invalid="true"{% endif %}>
+        <p id="username-help" class="mt-1 text-sm text-haze">Your profile will live at /u/<span class="text-paper">username</span>. Letters, numbers and underscores.</p>
+        {% for e in form.username.errors %}<p id="username-error" class="errorlist">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="id_password1" class="label">Password</label>
+        <input id="id_password1" name="password1" type="password" autocomplete="new-password" required class="field"
+               {% if form.password1.errors %}aria-invalid="true" aria-describedby="password1-error"{% endif %}>
+        {% for e in form.password1.errors %}<p id="password1-error" class="errorlist">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="id_password2" class="label">Password again</label>
+        <input id="id_password2" name="password2" type="password" autocomplete="new-password" required class="field"
+               {% if form.password2.errors %}aria-invalid="true" aria-describedby="password2-error"{% endif %}>
+        {% for e in form.password2.errors %}<p id="password2-error" class="errorlist">{{ e }}</p>{% endfor %}
+      </div>
+      {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+      <button type="submit" class="w-full rounded-full bg-riso px-5 py-3 font-bold text-stage hover:bg-paper">Create my diary</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

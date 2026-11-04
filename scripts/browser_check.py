@@ -152,7 +152,37 @@ def check_edit(page, mode):
             "live_update": edited >= 1 and message == 1 and shows == "14" and first_poster.upper() == "BIG THIEF"}
 
 
+def check_auth(page, mode):
+    import time
+
+    page.goto(f"{BASE}/")
+    page.wait_for_load_state("networkidle")
+    page.screenshot(path=str(OUT / f"landing-{mode}.png"), full_page=True)
+    page.click("text=Start your diary")
+    page.wait_for_load_state("networkidle")
+    username = f"fan{int(time.time() * 1000) % 10_000_000}"
+    page.fill("#id_email", f"{username}@example.com")
+    page.fill("#id_username", username)
+    page.fill("#id_password1", "big-chorus-99")
+    page.fill("#id_password2", "big-chorus-99")
+    page.screenshot(path=str(OUT / f"signup-{mode}.png"), full_page=True)
+    started = time.perf_counter()
+    page.click("button:has-text('Create my diary')")
+    page.wait_for_url("**/onboarding/")
+    elapsed = round(time.perf_counter() - started, 2)
+    heading = page.inner_text("h1")
+    page.fill("#onboarding-artist", "mitski")
+    page.click("button:has-text('Find shows')")
+    page.wait_for_selector("#results li button")
+    results = page.locator("#results li button").count()
+    page.goto(f"{BASE}/onboarding/")
+    page.wait_for_load_state("networkidle")
+    return {"user": username, "signup_seconds": elapsed, "heading": heading, "first_search_results": results,
+            "live_update": "LOG YOUR FIRST SHOW" in heading.upper() and results == 3}
+
+
 SCREENS = {
+    "onboarding": (False, check_auth),
     "edit": (True, check_edit),
     "detail": (True, check_detail),
     "diary": (True, check_diary),

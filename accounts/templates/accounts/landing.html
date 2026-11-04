@@ -1,5 +1,30 @@
 {% extends "base.html" %}
+{% block title %}Concert Diary: log every show you've seen{% endblock %}
 {% block content %}
-<h1 class="font-poster text-6xl font-900">Concert Diary</h1>
-<p class="mt-2 text-haze"><a href="{% url 'accounts:profile' 'demo' %}" class="text-riso underline">See the demo profile</a></p>
+<section aria-labelledby="hero-heading" class="pt-4">
+  <h1 id="hero-heading" class="max-w-5xl font-poster text-[clamp(3.5rem,13vw,9rem)] font-900 uppercase leading-[0.82]">Every show you've ever seen</h1>
+  <p class="mt-6 max-w-xl text-lg text-haze">Search setlist.fm, log past concerts in one tap, rate them, and pick the three that mattered most. Your profile becomes a map of your music life.</p>
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a href="{% url 'account_signup' %}" class="rounded-full bg-riso px-6 py-3 font-bold text-stage hover:bg-paper">Start your diary</a>
+    <a href="{% url 'account_login' %}" class="rounded-full border border-rail px-6 py-3 hover:bg-booth">Log in</a>
+  </div>
+</section>
+
+{% if demo and top3 %}
+<section aria-labelledby="demo-heading" class="mt-20">
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <h2 id="demo-heading" class="font-poster text-4xl font-800">{{ demo.profile.name }}'s Top 3</h2>
+    <a href="{% url 'accounts:profile' demo.username %}" class="font-bold text-riso underline underline-offset-4">See the whole profile</a>
+  </div>
+  <ol class="mt-4 grid gap-4 sm:grid-cols-3">
+    {% for att in top3 %}
+      <li class="poster flex min-h-[11rem] flex-col rounded-md p-5 text-stage {% if att.top3_rank == 1 %}bg-marquee{% elif att.top3_rank == 2 %}bg-riso{% else %}bg-paper{% endif %}">
+        <span class="font-poster text-xl font-900">No. {{ att.top3_rank }}</span>
+        <span class="poster-title mt-2 font-poster text-[clamp(2.25rem,5vw,3.5rem)] font-900 uppercase leading-[0.85]">{{ att.event.artist.name }}</span>
+        <span class="mt-auto pt-4 text-sm font-bold">{{ att.event.venue.name }}, {{ att.event.event_date|date:"M j, Y" }}</span>
+      </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
 {% endblock %}
