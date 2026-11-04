@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Add a show manually{% endblock %}
+{% block content %}
+<a href="{% url 'shows:search' %}" class="text-sm text-haze hover:text-paper">Back to search</a>
+<h1 class="mt-2 font-poster text-[clamp(2.75rem,9vw,5rem)] font-900 leading-[0.9]">Add a show manually</h1>
+<p class="mt-2 max-w-prose text-haze">For gigs that aren't on setlist.fm. It counts in your stats and goes on your map like any other show.</p>
+
+<form method="post" class="mt-8 max-w-2xl" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+    <p class="mb-5 rounded-lg border border-riso px-4 py-3" role="alert">{{ form.non_field_errors.0 }}</p>
+  {% endif %}
+
+  <fieldset class="grid gap-5 sm:grid-cols-2">
+    <legend class="sr-only">Show details</legend>
+    {% for field in form %}
+      {% if field.name != "rating" and field.name != "review" %}
+        <div class="{% if field.name == 'artist' or field.name == 'tour_name' %}sm:col-span-2{% endif %}">
+          <label class="label" for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required %} <span class="font-normal text-haze">(optional)</span>{% endif %}</label>
+          {{ field }}
+          {% for error in field.errors %}<p class="errorlist" id="{{ field.id_for_label }}-error">{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </fieldset>
+
+  <fieldset class="mt-8 grid gap-5 border-t border-rail pt-6">
+    <legend class="font-poster text-2xl font-800">How was it? <span class="font-sans text-base font-normal text-haze">(optional, you can add this later)</span></legend>
+    <div class="max-w-xs">
+      <label class="label" for="{{ form.rating.id_for_label }}">Rating</label>
+      {{ form.rating }}
+    </div>
+    <div>
+      <label class="label" for="{{ form.review.id_for_label }}">Review</label>
+      {{ form.review }}
+      <p class="mt-1 text-sm text-haze">Up to 5,000 characters.</p>
+      {% for error in form.review.errors %}<p class="errorlist">{{ error }}</p>{% endfor %}
+    </div>
+  </fieldset>
+
+  <button type="submit" class="mt-8 rounded-full bg-riso px-6 py-3 font-bold text-stage hover:bg-paper">Add to my diary</button>
+</form>
+{% endblock %}

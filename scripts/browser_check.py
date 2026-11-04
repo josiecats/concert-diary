@@ -9,6 +9,7 @@ Run with the webapp-testing helper so the dev server is managed for you:
 Screenshots land in docs/screens/<screen>-{mobile,desktop}.png.
 """
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -55,8 +56,33 @@ def check_profile(page, mode):
     return {"pins": pins, "markers": markers, "all_pins_in_view": inside, "popup": popup.replace("\n", " | ")}
 
 
+def reseed():
+    root = Path(__file__).resolve().parent.parent
+    subprocess.run([str(root / ".venv/bin/python"), str(root / "manage.py"), "seed_demo", "-v0"], check=True)
+
+
+def check_search(page, mode):
+    page.goto(f"{BASE}/search/")
+    page.wait_for_load_state("networkidle")
+    wait_for_map(page, 5)
+    page.locator("#id_artist").press_sequentially("japanese", delay=40)  # exercises the 300ms debounce
+    page.wait_for_selector("#results li button")
+    before = page.locator(".leaflet-marker-icon[title^='Union Transfer']").get_attribute("title")
+    button = page.locator("#results li button[aria-label*='Union Transfer']")
+    button.click()
+    page.wait_for_selector("#results [role=status]:has-text('In your diary')")
+    page.wait_for_function("() => document.getElementById('minimap-status').textContent.includes('Added')")
+    page.wait_for_timeout(500)
+    after = page.locator(".leaflet-marker-icon[title^='Union Transfer']").get_attribute("title")
+    status = page.inner_text("#minimap-status")
+    reloaded = page.evaluate("() => performance.getEntriesByType('navigation').length")  # still 1 page load
+    return {"pin_before": before, "pin_after": after, "status": status,
+            "live_update": before != after and reloaded == 1}
+
+
 SCREENS = {
     "profile": (False, check_profile),
+    "search": (True, check_search),
 }
 
 
@@ -74,11 +100,12 @@ def main(names):
                 page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
                 page.on("pageerror", lambda e: errors.append(str(e)))
                 if needs_login:
+                    reseed()  # each width starts from the same diary (resets the session too)
                     login(page)
                 result = check(page, mode) or {}
                 overflow = page.evaluate("() => document.documentElement.scrollWidth - window.innerWidth")
                 page.screenshot(path=str(OUT / f"{name}-{mode}.png"), full_page=True)
-                ok = overflow <= 0 and not errors and result.get("all_pins_in_view", True) is not False
+                ok = overflow <= 0 and not errors and all(result.get(k, True) is not False for k in ("all_pins_in_view", "live_update"))
                 failures += not ok
                 print(f"[{'PASS' if ok else 'FAIL'}] {name} @ {w}px  overflow={overflow}px  console_errors={errors}  {result}")
                 ctx.close()

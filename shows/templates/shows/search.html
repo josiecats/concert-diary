@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Log a show{% endblock %}
+{% block head %}{% include "maps/partials/leaflet_css.html" %}{% endblock %}
+
+{% block content %}
+<div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+  <section aria-labelledby="search-heading">
+    <h1 id="search-heading" class="font-poster text-[clamp(2.75rem,9vw,5rem)] font-900 leading-[0.9]">Log a show</h1>
+    <p class="mt-2 text-haze">Find a show on setlist.fm and log it in one tap.</p>
+
+    <form method="get" action="{% url 'shows:search' %}" role="search" class="mt-6 space-y-4"
+          hx-get="{% url 'shows:search_results' %}" hx-target="#results" hx-swap="innerHTML"
+          hx-trigger="input delay:300ms, submit" hx-sync="this:replace" hx-indicator="#search-spinner">
+      <div>
+        <label for="{{ form.artist.id_for_label }}" class="label">Artist</label>
+        <div class="relative">
+          {{ form.artist }}
+          <span id="search-spinner" class="htmx-indicator pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-haze" aria-hidden="true">Searching</span>
+        </div>
+      </div>
+      <fieldset>
+        <legend class="label">Narrow it down (optional)</legend>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div>
+            <label for="{{ form.year.id_for_label }}" class="sr-only">Year</label>
+            {{ form.year }}
+          </div>
+          <div>
+            <label for="{{ form.venue.id_for_label }}" class="sr-only">Venue</label>
+            {{ form.venue }}
+          </div>
+          <div>
+            <label for="{{ form.city.id_for_label }}" class="sr-only">City</label>
+            {{ form.city }}
+          </div>
+        </div>
+      </fieldset>
+      <noscript><button type="submit" class="rounded-full bg-riso px-5 py-2 font-bold text-stage">Search</button></noscript>
+    </form>
+
+    <div id="results" class="mt-8" aria-live="polite">
+      {% include "shows/partials/results.html" %}
+    </div>
+  </section>
+
+  <aside aria-labelledby="minimap-heading" class="lg:sticky lg:top-6 lg:self-start">
+    <h2 id="minimap-heading" class="font-poster text-3xl font-800">Your map</h2>
+    <p class="text-sm text-haze">New pins drop in as you log.</p>
+    <div data-diary-map data-url="{% url 'maps:venues' user.username %}" data-status-id="minimap-status"
+         class="map-dark mt-3 h-56 overflow-hidden rounded-xl border border-rail lg:h-72"
+         role="region" aria-label="Map of venues in your diary"></div>
+    <p id="minimap-status" class="mt-2 text-sm text-emerald-300" aria-live="polite"></p>
+    <div class="mt-6 rounded-xl border border-rail bg-booth p-5">
+      <p class="font-bold">Can't find it?</p>
+      <p class="mt-1 text-sm text-haze">Small gigs and house shows often aren't on setlist.fm.</p>
+      <a href="{% url 'shows:add_manual' %}" class="mt-3 inline-block rounded-full border border-riso px-4 py-2 text-sm font-bold text-riso hover:bg-riso hover:text-stage">Add a show manually</a>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}{% include "maps/partials/leaflet_js.html" %}{% endblock %}
