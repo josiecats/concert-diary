@@ -1,11 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from shows.tests.factories import PASSWORD, make_user
 
 User = get_user_model()
+
+GOOGLE_CONFIGURED = {
+    "google": {
+        "APPS": [{"client_id": "test-client-id", "secret": "test-secret", "key": ""}],
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
+GOOGLE_UNCONFIGURED = {"google": {"APPS": []}}
 
 
 class US1SignUpTests(TestCase):
@@ -24,11 +33,34 @@ class US1SignUpTests(TestCase):
         self.assertTrue(user.check_password("loud-guitars-42"))
         self.assertTrue(hasattr(user, "profile"))
 
-    def test_signup_page_shows_google_option_marked_coming_soon(self):
-        resp = self.client.get(reverse("account_signup"))
-        self.assertContains(resp, "Continue with Google")
-        self.assertContains(resp, 'aria-disabled="true"')
-        self.assertContains(resp, "Google sign-in is coming soon")
+    @override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_UNCONFIGURED)
+    def test_google_button_is_disabled_when_no_client_id_is_set(self):
+        for name in ("account_signup", "account_login"):
+            resp = self.client.get(reverse(name))
+            self.assertContains(resp, "Continue with Google")
+            self.assertContains(resp, 'aria-disabled="true"')
+            self.assertNotContains(resp, reverse("google_login"))
+
+    @override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_CONFIGURED)
+    def test_google_button_posts_to_google_login_when_configured(self):
+        for name in ("account_signup", "account_login"):
+            resp = self.client.get(reverse(name))
+            self.assertContains(resp, f'action="{reverse("google_login")}"')
+            self.assertNotContains(resp, 'aria-disabled="true"')
+
+    @override_settings(SOCIALACCOUNT_PROVIDERS=GOOGLE_CONFIGURED)
+    def test_google_login_redirects_to_google_with_client_id_from_settings(self):
+        resp = self.client.post(reverse("google_login"))
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(resp["Location"].startswith("https://accounts.google.com/"), resp["Location"])
+        self.assertIn("client_id=test-client-id", resp["Location"])
+
+    def test_google_signups_choose_their_own_username(self):
+        from django.conf import settings
+
+        self.assertFalse(settings.SOCIALACCOUNT_AUTO_SIGNUP)
+        self.assertIn("username*", settings.ACCOUNT_SIGNUP_FIELDS)
+        self.assertEqual(settings.ACCOUNT_SIGNUP_REDIRECT_URL, reverse("accounts:onboarding"))
 
     def test_after_signup_land_on_onboarding_that_prompts_first_log(self):
         resp = self.signup()

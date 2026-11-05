@@ -11,7 +11,7 @@
     <h2 id="signup-heading" class="font-poster text-4xl font-800">Create your diary</h2>
     <p class="mt-1 text-sm text-haze">Already have one? <a href="{% url 'account_login' %}{% if redirect_field_value %}?{{ redirect_field_name }}={{ redirect_field_value|urlencode }}{% endif %}" class="font-bold text-riso underline underline-offset-4">Log in</a></p>
 
-    <div class="mt-6">{% include "account/_google_stub.html" %}</div>
+    <div class="mt-6">{% include "account/_google_button.html" %}</div>
     <p class="my-6 flex items-center gap-3 text-sm text-haze" aria-hidden="true"><span class="h-px flex-1 bg-rail"></span>or with email<span class="h-px flex-1 bg-rail"></span></p>
 
     <form method="post" action="{% url 'account_signup' %}" class="space-y-4" novalidate>

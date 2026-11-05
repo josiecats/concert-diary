@@ -10,6 +10,8 @@ env = environ.Env(
     DEBUG=(bool, False),
     SETLISTFM_CLIENT=(str, "mock"),
     SETLISTFM_API_KEY=(str, ""),
+    GOOGLE_CLIENT_ID=(str, ""),
+    GOOGLE_CLIENT_SECRET=(str, ""),
 )
 environ.Env.read_env(BASE_DIR / ".env")
 
@@ -26,6 +28,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "accounts",
     "shows",
     "maps",
@@ -87,6 +91,25 @@ ACCOUNT_SIGNUP_REDIRECT_URL = "/onboarding/"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "account_login"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+
+# Google OAuth (US-1). Credentials come from .env only; with no client ID the
+# provider has no app, and the log-in/sign-up pages show a disabled button.
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET")
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APPS": (
+            [{"client_id": GOOGLE_CLIENT_ID, "secret": GOOGLE_CLIENT_SECRET, "key": ""}]
+            if GOOGLE_CLIENT_ID
+            else []
+        ),
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
+# Google users still choose their own username for /u/<username>, then land on onboarding.
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_LOGIN_ON_GET = False
 
 # Prototype: password-reset emails print to the runserver console.
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
