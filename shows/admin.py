@@ -1,6 +1,7 @@
+from django import forms
 from django.contrib import admin
 
-from .models import Artist, Attendance, Event, Report, Venue
+from .models import Artist, Attendance, Event, Report, Tag, Venue
 
 
 @admin.register(Artist)
@@ -22,12 +23,56 @@ class EventAdmin(admin.ModelAdmin):
     autocomplete_fields = ["artist", "venue"]
 
 
+class AttendanceAdminForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = "__all__"
+
+    def clean(self):
+        cleaned = super().clean()
+        user, tags = cleaned.get("user"), cleaned.get("tags")
+        if user and tags:
+            foreign = [t.name for t in tags if t.owner_id and t.owner_id != user.pk]
+            if foreign:
+                self.add_error("tags", f"These are another user's custom tags: {', '.join(foreign)}.")
+        return cleaned
+
+
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
-    list_display = ["user", "event", "rating", "top3_rank", "review_hidden", "updated_at"]
-    list_filter = ["review_hidden"]
+    form = AttendanceAdminForm
+    list_display = ["user", "event", "rating", "top3_rank", "review_has_spoilers", "review_hidden", "updated_at"]
+    list_filter = ["review_hidden", "review_has_spoilers"]
     search_fields = ["user__username", "event__artist__name", "review"]
     raw_id_fields = ["event"]
+    filter_horizontal = ["tags"]
+
+
+class TagTypeFilter(admin.SimpleListFilter):
+    title = "type"
+    parameter_name = "type"
+
+    def lookups(self, request, model_admin):
+        return [("premade", "Premade"), ("custom", "Custom")]
+
+    def queryset(self, request, queryset):
+        if self.value() == "premade":
+            return queryset.filter(owner__isnull=True)
+        if self.value() == "custom":
+            return queryset.filter(owner__isnull=False)
+        return queryset
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ["name", "owner", "is_premade"]
+    list_filter = [TagTypeFilter]
+    search_fields = ["name", "owner__username"]
+    raw_id_fields = ["owner"]
+
+    @admin.display(boolean=True, description="Premade")
+    def is_premade(self, obj):
+        return obj.is_premade
 
 
 @admin.register(Report)
