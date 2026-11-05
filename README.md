@@ -24,14 +24,17 @@ Open http://127.0.0.1:8000/u/demo/ to see the populated demo profile.
 - **Second user:** `riley` with the same password, so show pages have other fans' reviews.
 - **Resetting the demo:** `seed_demo` is safe to run again. It resets the demo diary and the demo password.
 - **Password-reset emails** print to the `runserver` console.
+- **Google sign-in (optional):** create an OAuth client in Google Cloud Console with the redirect URI `http://localhost:8000/accounts/google/login/callback/`, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env`. Without them, the Google button is shown disabled.
 
 ### Tests
 
 ```bash
-.venv/bin/python manage.py test          # 95 tests
+.venv/bin/python manage.py test          # 151 tests
 ```
 
 Each user story has its own test file, with one test per acceptance criterion. Examples: `accounts/tests/test_us2_profile.py` and `shows/tests/test_us4_log.py`.
+
+Model rules (constraints, validators, tags, deletes) are tested on their own in `shows/tests/test_models.py` and `accounts/tests/test_models.py`. `shows/tests/test_admin.py` checks that every model's admin pages load.
 
 Each screen also has a `*_clickthrough.py` test that uses the Django test client. It follows every link, sends HTMX requests, and checks that every control and button has an accessible name.
 
@@ -68,15 +71,16 @@ All six are reachable from the main nav: Profile, Diary, Log a show, and Setting
 
 Of the 35 criteria for US-1 to US-10:
 
-- **33 pass**
+- **34 pass**
 - **1 needs manual timing** (US-4 median time)
-- **1 is stubbed** (Google sign-in)
+
+A full Google sign-in with real credentials still needs one manual check. The tests cover the button and the redirect to Google.
 
 "Pass" means an automated test covers the criterion. A name in brackets means the criterion is also confirmed in the browser check for that screen.
 
 | Story | Criterion | Status | Evidence |
 | --- | --- | --- | --- |
-| US-1 | Sign-up supports email + password and Google OAuth | Partial | Email + password passes. Google is a visual stub ("coming soon"), per product decision. |
+| US-1 | Sign-up supports email + password and Google OAuth | Pass | `test_us1_signup`: email + password, and the Google button posts to Google with the client ID from `.env`. |
 | US-1 | After sign-up I land on onboarding that prompts my first log | Pass | `test_us1_signup` (onboarding) |
 | US-1 | Username required, unique and used in /u/username | Pass | `test_us1_signup` |
 | US-2 | Profile shows avatar, display name, bio, home city, joined date | Pass | `test_us2_profile` (profile) |
@@ -124,15 +128,16 @@ There's no report button and no US-11 tests yet.
 ## Decisions made for the prototype
 
 - **Private profiles** are visible to their owner only. Everyone else gets a "This profile is private" page, and the diary and map JSON return 403.
-- **The spoiler flag** mentioned in F3 is left out.
+- **The spoiler flag and tags are in the data model only.** `Attendance.review_has_spoilers` and the `Tag` model exist, but there's no UI for them yet. The 8 premade tags from the design are seeded by a migration. Custom tags are max 24 characters and unique per user, and nobody can attach another user's custom tag.
 - **The search page has a mini "Your map"**, so you can see a pin arrive as you log (US-4).
-- **Google sign-in is a stub.** Wiring it up later means adding `allauth.socialaccount` and the Google provider, with keys from `.env`.
+- **Google sign-ups choose their own username** on a final step before onboarding, rather than getting one made from their email.
 - **The log URL uses the setlist.fm id** (`/shows/log/<setlist_id>/`). An event is cached in the database the first time anyone logs it.
 - **"Fix location"** is offered only on venues you added yourself. You can enter a city (geocoded) or exact coordinates.
 - **Additions to the PRD data model:**
   - `Attendance.review_edited_at`, because `updated_at` also changes when the Top 3 changes
   - `Attendance.review_hidden` (US-11)
   - `Event.created_by` and `Venue.created_by`, for user-added shows
+  - `Attendance.review_has_spoilers` and the `tags` table (both now also in PRD.md)
 
 ## Mock data
 
