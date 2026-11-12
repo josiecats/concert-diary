@@ -1,6 +1,8 @@
 # Concert Diary (v1 prototype)
 
-A clickable prototype of Concert Diary, a "Letterboxd for concerts". It covers all six v1 screens from [PRD.md](PRD.md), built with Django templates, HTMX and Tailwind (CDN). It runs on mock setlist.fm data and makes no real API calls.
+Concert Diary, a "Letterboxd for concerts". It covers all six v1 screens from [PRD.md](PRD.md), built with Django templates, HTMX and Tailwind (CDN), styled to match the prototype in [design/](design/) (lilac/violet palette, Space Grotesk and Inter). It runs on mock setlist.fm data and makes no real API calls.
+
+It works in any browser on a computer or phone. On a phone you can add it to your home screen and it opens full-screen like an app (see [Open it on your phone](#open-it-on-your-phone)).
 
 This is milestone 2 in the PRD: the build you put in front of 5 users for the usability test.
 
@@ -10,7 +12,7 @@ You need Python 3.11.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install -r requirements-dev.txt   # requirements.txt alone is what production installs
 cp .env.example .env          # defaults work; no API keys needed for the mock
 
 .venv/bin/python manage.py migrate
@@ -54,6 +56,38 @@ Some things the Django test client can't see: layout at 375px and 1280px, the Le
 - The script reseeds the demo before each logged-in check.
 - Use absolute paths and `exec` in `--server`, as shown above. With relative paths the helper never sees the server come up.
 
+## Open it on your phone
+
+**Same Wi-Fi, no deploy needed.** Start the server on all interfaces and open your Mac's address on the phone:
+
+```bash
+.venv/bin/python manage.py runserver 0.0.0.0:8000
+ipconfig getifaddr en0        # prints something like 192.168.1.23
+```
+
+Then open `http://192.168.1.23:8000` on the phone. This only works while your Mac is on and running the server.
+
+**Add to home screen.** In Safari (iPhone) tap Share, then *Add to Home Screen*. In Chrome (Android) tap the menu, then *Install app*. It gets the Concert Diary icon and opens without browser bars.
+
+## Deploy to Render (a public link for any device)
+
+The repo has a Render Blueprint ([render.yaml](render.yaml)) and build script ([build.sh](build.sh)). They create a web service and a free Postgres database, generate `SECRET_KEY`, run migrations and load the demo profile.
+
+1. Merge this work into `main` on GitHub (the Blueprint deploys `main`).
+2. Sign in at [dashboard.render.com](https://dashboard.render.com) with GitHub. Choose **New > Blueprint**, pick `josiecats/concert-diary`, and click **Apply**. Leave the Google and setlist.fm keys blank for now.
+3. When the deploy finishes, open the `https://concert-diary-….onrender.com` link on any computer or phone. Log in as `demo` / `demo12345`, or sign up.
+
+Every push to `main` redeploys. Things to know about the free plan:
+
+- The site sleeps after about 15 minutes idle, so the first visit after that takes 30 to 60 seconds to load.
+- Render's free Postgres database expires after 30 days. Upgrade it, or create a new one, before then.
+- `SEED_DEMO=true` resets the demo users' diaries on each deploy. Other accounts aren't touched. Set it to `false` in the dashboard once real people are using it.
+- Password-reset emails aren't sent yet (the email backend prints to the logs).
+- **Google sign-in:** add `https://<your-app>.onrender.com/accounts/google/login/callback/` as a redirect URI in Google Cloud Console, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the Render dashboard.
+- **Admin (US-11 moderation):** set `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and `DJANGO_SUPERUSER_PASSWORD` in the dashboard and redeploy. Then go to `/admin/`.
+
+Production settings come from environment variables: `DEBUG=False`, `SECRET_KEY` and `DATABASE_URL`. Render's hostname is added to `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` automatically. Static files are served by WhiteNoise, and the app runs under gunicorn.
+
 ## Screens
 
 | # | Screen | URL | Stories |
@@ -65,7 +99,7 @@ Some things the Django test client can't see: layout at 375px and 1280px, the Le
 | 5 | Show detail, rate and review | `/shows/<id>/` | US-7 |
 | 6 | Edit or delete | `/entries/<id>/edit/` | US-8 |
 
-All six are reachable from the main nav: Profile, Diary, Log a show, and Settings. On mobile they're under the Menu button.
+All six are reachable from the header: Profile, Diary and Map tabs, a search box, *+ Log a show*, and the avatar menu (Top 3, Settings, Log out). On phones a bottom tab bar replaces the tabs: Profile, Diary, + (log a show), Map, Account.
 
 ## Acceptance criteria
 
@@ -151,5 +185,7 @@ There's no report button and no US-11 tests yet.
 
 - At world zoom, pins in the same metro area overlap (the two London venues; Madison Square Garden and Brooklyn Steel), so you have to zoom in to open one. Marker clustering would fix this.
 - On phones, a popup on the search page's mini-map can be clipped at the top edge.
-- Tailwind runs from the CDN, which is fine for a prototype. Switch to the Tailwind CLI before production.
+- Tailwind runs from the CDN, which is fine for a prototype. Switch to the Tailwind CLI for faster loads and no console warning.
+- The design's diary shows tag chips ("Wild crowd", "With friends"). Tags exist in the data model but have no UI yet, so the diary doesn't show them.
+- The Map tab links to the map on your profile. There's no separate full-screen map page yet.
 - Password reset and the other allauth pages work and use the app layout, but their forms aren't custom-styled.
