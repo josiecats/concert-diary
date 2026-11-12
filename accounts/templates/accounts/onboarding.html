@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Log your first show{% endblock %}
+{% block content %}
+<section aria-labelledby="onboarding-heading" class="mx-auto max-w-3xl">
+  <p class="text-xl font-bold text-riso">You're in, @{{ user.username }}.</p>
+  <h1 id="onboarding-heading" class="mt-2 text-[clamp(2.6rem,9vw,4.5rem)] font-bold leading-[1] tracking-tight">Log your first show</h1>
+  <p class="mt-4 max-w-prose text-lg text-haze">Who was the last band you saw? Type their name, find the night you were there and log it in one tap.</p>
+
+  <form method="get" action="{% url 'shows:search' %}" role="search" class="mt-8 flex flex-col gap-3 sm:flex-row">
+    <label for="onboarding-artist" class="sr-only">Artist</label>
+    <input id="onboarding-artist" name="artist" type="search" required minlength="2" autocomplete="off" autofocus
+           class="field text-lg sm:flex-1" placeholder="Artist name">
+    <button type="submit" class="btn">Find shows</button>
+  </form>
+
+  <p class="mt-6 text-sm text-haze">
+    Not on setlist.fm? <a href="{% url 'shows:add_manual' %}" class="text-riso underline underline-offset-4">Add a show manually</a>.
+    Want to set up your profile first? <a href="{% url 'accounts:settings' %}" class="text-riso underline underline-offset-4">Add a bio and city</a>.
+  </p>
+  <p class="mt-10"><a href="{% url 'accounts:profile' user.username %}" class="text-haze underline underline-offset-4 hover:text-paper">Skip for now and go to my profile</a></p>
+</section>
+{% endblock %}

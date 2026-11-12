@@ -1,0 +1,44 @@
+{% load diary %}
+<section id="diary-list" class="mt-6" aria-live="polite" aria-label="Logged shows">
+  {% if entries %}
+    {% if year %}<p class="mb-2 text-sm text-haze">{{ entries|length }} show{{ entries|length|pluralize }} in {{ year }}</p>{% endif %}
+    {% if sort == "rating" %}
+      <ol>
+        {% for att in entries %}{% include "shows/partials/diary_entry.html" %}{% endfor %}
+      </ol>
+    {% else %}
+      {% regroup entries by event.event_date.year as by_year %}
+      {% for y in by_year %}
+        <section class="mt-8 first:mt-4" aria-label="{{ y.grouper }}">
+          <h2 class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span class="stat-num text-5xl text-lilac sm:text-7xl">{{ y.grouper }}</span>
+            <span class="font-sans text-sm font-normal tracking-normal text-haze">{{ y.list|length }} show{{ y.list|length|pluralize }}{% with avg=y.list|average_rating %}{% if avg is not None %} · average {{ avg }} stars{% endif %}{% endwith %}</span>
+          </h2>
+          {% regroup y.list by event.event_date.month as by_month %}
+          {% for m in by_month %}
+            <div class="mt-6">
+              <h3 class="flex items-center gap-3 font-sans text-xs font-semibold uppercase tracking-[0.16em] text-haze">
+                <span>{{ m.list.0.event.event_date|date:"F" }}</span>
+                <span class="h-px flex-1 bg-white/10" aria-hidden="true"></span>
+                <span class="tracking-normal">{{ m.list|length }} show{{ m.list|length|pluralize }}</span>
+              </h3>
+              <ol>
+                {% for att in m.list %}{% include "shows/partials/diary_entry.html" %}{% endfor %}
+              </ol>
+            </div>
+          {% endfor %}
+        </section>
+      {% endfor %}
+    {% endif %}
+  {% elif total %}
+    <p class="rounded-2xl border border-dashed border-white/15 p-6 text-haze" role="status">No shows logged in {{ year }}. Pick another year or show all years.</p>
+  {% elif is_owner %}
+    <div class="card mt-4 p-8 text-center">
+      <p class="font-poster text-2xl font-bold">Nothing here yet</p>
+      <p class="mt-1 text-haze">Search setlist.fm for a show you've been to.</p>
+      <a href="{% url 'shows:search' %}" class="btn mt-5">Log your first show</a>
+    </div>
+  {% else %}
+    <p class="text-haze">No shows logged yet.</p>
+  {% endif %}
+</section>

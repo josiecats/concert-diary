@@ -1,0 +1,26 @@
+<form method="post" action="{% url 'maps:fix_location' venue.pk %}"
+      hx-post="{% url 'maps:fix_location' venue.pk %}" hx-target="this" hx-swap="outerHTML"
+      class="w-full rounded-xl border border-rail bg-stage p-4" aria-labelledby="fix-{{ venue.pk }}-title">
+  {% csrf_token %}
+  <p id="fix-{{ venue.pk }}-title" class="font-bold">Place {{ venue.name }} on the map</p>
+  <p class="text-sm text-haze">Enter the city and we'll find it, or add exact coordinates.</p>
+  {% if form.non_field_errors %}<p class="errorlist" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
+  <div class="mt-3 grid gap-3 sm:grid-cols-3">
+    <div>
+      <label class="label" for="{{ form.city.id_for_label }}">City</label>
+      {{ form.city }}
+      {% if form.city.errors %}<p class="errorlist">{{ form.city.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="label" for="{{ form.lat.id_for_label }}">Latitude (optional)</label>
+      {{ form.lat }}
+      {% if form.lat.errors %}<p class="errorlist">{{ form.lat.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="label" for="{{ form.lng.id_for_label }}">Longitude (optional)</label>
+      {{ form.lng }}
+      {% if form.lng.errors %}<p class="errorlist">{{ form.lng.errors.0 }}</p>{% endif %}
+    </div>
+  </div>
+  <button type="submit" class="mt-4 btn">Save location</button>
+</form>

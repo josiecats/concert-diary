@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Edit your Top 3{% endblock %}
+{% block content %}
+<a href="{% url 'accounts:profile' user.username %}" class="text-sm text-haze hover:text-paper">Back to profile</a>
+<h1 class="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">Pick the three that mattered most</h1>
+<p class="mt-2 max-w-prose text-haze">They sit at the top of your profile. Use the arrows to change the order.</p>
+<div class="mt-8">{% include "shows/partials/top3_editor.html" %}</div>
+{% endblock %}

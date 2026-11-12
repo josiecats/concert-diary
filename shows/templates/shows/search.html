@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Log a show{% endblock %}
+{% block head %}{% include "maps/partials/leaflet_css.html" %}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl">
+  <ol class="flex items-center justify-center gap-3 text-sm sm:gap-6" aria-label="Logging steps">
+    <li class="flex items-center gap-2 font-semibold" aria-current="step"><span class="flex h-7 w-7 items-center justify-center rounded-full bg-lilac text-xs font-bold text-[#2E1065]">1</span>Find the show</li>
+    <li class="flex items-center gap-2 text-haze"><span class="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-xs font-bold">2</span>Rate &amp; review</li>
+    <li class="hidden items-center gap-2 text-haze sm:flex"><span class="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-xs font-bold">3</span>Saved</li>
+  </ol>
+
+  <section aria-labelledby="search-heading" class="mt-6 sm:mt-8">
+    <h1 id="search-heading" class="text-center text-4xl font-bold tracking-tight sm:text-6xl">Which show was it?</h1>
+    <p class="mt-3 text-center text-haze sm:text-lg">Search setlist.fm by artist. Pick your show and log it in one tap, then rate it.</p>
+
+    <form method="get" action="{% url 'shows:search' %}" role="search" class="mt-8 space-y-3"
+          hx-get="{% url 'shows:search_results' %}" hx-target="#results" hx-swap="innerHTML"
+          hx-trigger="input delay:300ms, submit" hx-sync="this:replace" hx-indicator="#search-spinner">
+      <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem]">
+        <div>
+          <label for="{{ form.artist.id_for_label }}" class="sr-only">Artist</label>
+          <div class="relative">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-lilac"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            {{ form.artist }}
+            <span id="search-spinner" class="htmx-indicator pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-haze" aria-hidden="true">Searching</span>
+          </div>
+        </div>
+        <div>
+          <label for="{{ form.year.id_for_label }}" class="sr-only">Year</label>
+          {{ form.year }}
+        </div>
+      </div>
+      <details class="group" {% if form.venue.value or form.city.value %}open{% endif %}>
+        <summary class="cursor-pointer list-none text-sm text-haze hover:text-paper">
+          <span class="underline underline-offset-4">Narrow by venue or city</span> <span class="text-xs">(optional)</span>
+        </summary>
+        <div class="mt-3 grid gap-3 sm:grid-cols-2">
+          <div>
+            <label for="{{ form.venue.id_for_label }}" class="sr-only">Venue</label>
+            {{ form.venue }}
+          </div>
+          <div>
+            <label for="{{ form.city.id_for_label }}" class="sr-only">City</label>
+            {{ form.city }}
+          </div>
+        </div>
+      </details>
+      <noscript><button type="submit" class="btn">Search</button></noscript>
+    </form>
+
+    <div id="results" class="mt-8" aria-live="polite">
+      {% include "shows/partials/results.html" %}
+    </div>
+  </section>
+
+  <div class="mt-12 grid gap-6 sm:grid-cols-2">
+    <div class="rounded-2xl border border-dashed border-white/20 p-5">
+      <p class="font-semibold">Went to a local gig?</p>
+      <p class="mt-1 text-sm text-haze">If setlist.fm doesn't have it, add it yourself.</p>
+      <a href="{% url 'shows:add_manual' %}" class="btn-ghost mt-4 w-full">Add a show manually</a>
+    </div>
+    <aside aria-labelledby="minimap-heading">
+      <h2 id="minimap-heading" class="eyebrow">Your map</h2>
+      <div data-diary-map data-url="{% url 'maps:venues' user.username %}" data-status-id="minimap-status"
+           class="map-dark mt-3 h-44 overflow-hidden rounded-2xl border border-white/10"
+           role="region" aria-label="Map of venues in your diary"></div>
+      <p id="minimap-status" class="mt-2 text-sm text-lilac" aria-live="polite">New pins drop in as you log.</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}{% include "maps/partials/leaflet_js.html" %}{% endblock %}

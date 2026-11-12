@@ -4,6 +4,9 @@ A web app for logging live shows ("Letterboxd for concerts"). V1 is a free, sing
 
 ## Rules
 
+- Visual source of truth: design/ (screenshots of the prototype). Match colors, type, spacing.
+- Palette: bg #0E0818, text #F7F3FF, muted #BBB0D6, lilac #D8B4FE, violet #6D28D9, light #DDD6FE.
+- Fonts: Space Grotesk (headings), Inter (body). White primary buttons, rounded 12px.
 - PRD.md is the source of truth for requirements. Reference user story IDs (US-x) in commits and tests.
 - Use HTMX partial templates for interactive actions. No React or other JS framework.
 - Never put API keys in code. Read them from `.env` via django-environ.

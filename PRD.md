@@ -153,7 +153,7 @@ Each story maps to a v1 feature. Acceptance criteria are written so a tester can
 
 ## Data model
 
-Six tables in Postgres. Events, artists and venues are cached from setlist.fm the first time someone logs them, so later lookups skip the API.
+Seven tables in Postgres, plus a join table linking attendances to tags. Events, artists and venues are cached from setlist.fm the first time someone logs them, so later lookups skip the API.
 
 | Table | Key fields | Notes |
 | --- | --- | --- |
@@ -161,8 +161,9 @@ Six tables in Postgres. Events, artists and venues are cached from setlist.fm th
 | artists | id, mbid, name | mbid = MusicBrainz ID, which setlist.fm returns |
 | venues | id, setlistfm_id, name, city, country, lat, lng | lat/lng from geocoding; setlist.fm gives only city coordinates |
 | events | id, setlistfm_id, artist_id, venue_id, event_date, tour_name, source | source = setlistfm or user |
-| attendances | id, user_id, event_id, rating, review, top3_rank, created_at, updated_at | Unique on (user_id, event_id); top3_rank is 1 to 3 or null |
+| attendances | id, user_id, event_id, rating, review, review_has_spoilers, top3_rank, created_at, updated_at | Unique on (user_id, event_id); top3_rank is 1 to 3 or null |
 | reports | id, attendance_id, reporter_id, reason, status | Moderation queue |
+| tags | id, name, owner_id | owner_id null = premade tag (seeded); set = that user's custom tag. Names max 24 characters, unique per owner ignoring case. Linked to attendances many-to-many |
 
 V2 adds a `meetups` table (event_id, host_id, approx_location, starts_at, ends_at, visibility, expires_at) and `rsvps`.
 

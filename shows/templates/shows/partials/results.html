@@ -1,0 +1,29 @@
+{% if too_short %}
+  <p class="py-6 text-haze" role="status">Type at least 2 letters of an artist's name.</p>
+{% elif query and results %}
+  <p class="text-sm text-haze" role="status">{{ results|length }} show{{ results|length|pluralize }} found, newest first</p>
+  <ul class="mt-3 divide-y divide-rail border-y border-rail">
+    {% for result in results %}
+      <li class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-4">
+        <div class="min-w-0">
+          <p class="text-xl font-bold leading-tight">{{ result.artist_name }}</p>
+          <p class="text-haze">
+            <time datetime="{{ result.event_date|date:'Y-m-d' }}" class="font-bold text-paper">{{ result.event_date|date:"M j, Y" }}</time>
+            at {{ result.venue_name }}, {{ result.city }}{% if result.country %}, {{ result.country }}{% endif %}
+          </p>
+          {% if result.tour_name %}<p class="text-sm text-haze">{{ result.tour_name }}</p>{% endif %}
+        </div>
+        <div class="shrink-0">{% include "shows/partials/log_button.html" %}</div>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="mt-4 text-sm text-haze">Not here? <a href="{{ manual_url }}" class="font-bold text-riso underline underline-offset-4">Add a show manually</a></p>
+{% elif query %}
+  <div class="rounded-xl border border-dashed border-rail p-6" role="status">
+    <p class="font-bold">No shows match "{{ query }}"{% if form.cleaned_data.year or form.cleaned_data.venue or form.cleaned_data.city %} with those filters{% endif %}.</p>
+    <p class="mt-1 text-haze">Try removing a filter or checking the spelling. Small local gigs often aren't on setlist.fm.</p>
+    <a href="{{ manual_url }}" class="mt-4 inline-block btn-outline btn-sm">Add it manually</a>
+  </div>
+{% else %}
+  <p class="py-6 text-haze">Start typing an artist's name to find shows you've been to.</p>
+{% endif %}

@@ -1,0 +1,36 @@
+{% load diary %}
+<li class="grid grid-cols-[2.5rem_3rem_minmax(0,1fr)_auto] items-start gap-x-3 border-b border-white/10 py-4 sm:grid-cols-[3.5rem_4rem_minmax(0,1fr)_auto] sm:gap-x-5">
+  <time datetime="{{ att.event.event_date|date:'Y-m-d' }}" class="pt-0.5 text-center leading-none">
+    <span class="stat-num block text-2xl sm:text-3xl">{{ att.event.event_date|date:"j" }}</span>
+    <span class="mt-1 block text-[0.65rem] font-semibold uppercase tracking-wider text-haze">{{ att.event.event_date|date:"D" }}</span>
+    {% if sort == "rating" %}<span class="mt-0.5 block text-[0.65rem] text-haze">{{ att.event.event_date|date:"M Y" }}</span>{% endif %}
+  </time>
+  <span class="tile {{ att.event.artist.name|tile_class }} aspect-[4/5] w-full text-sm sm:text-base" aria-hidden="true">{{ att.event.artist.name|initials }}</span>
+  <div class="min-w-0">
+    <p class="flex flex-wrap items-center gap-2">
+      <a href="{% url 'shows:detail' att.event_id %}" class="text-lg font-semibold leading-tight hover:text-lilac">{{ att.event.artist.name }}</a>
+      {% if att.top3_rank %}<span class="badge">Top 3 · #{{ att.top3_rank }}</span>{% endif %}
+      {% if att.event.is_user_added %}<span class="chip">User-added</span>{% endif %}
+    </p>
+    <p class="text-sm text-haze">{{ att.event.venue.name }} · {{ att.event.venue.city }}</p>
+    {% if att.review %}
+      {% if not att.review_hidden %}
+        <p class="mt-1.5 max-w-prose text-paper/90">“{{ att.review|truncatechars:180 }}”</p>
+        {% if att.review_edited_at %}<p class="text-xs text-haze">Edited {{ att.review_edited_at|date:"M j, Y" }}</p>{% endif %}
+      {% elif user.is_authenticated and user.pk == att.user_id %}
+        <p class="mt-1.5 max-w-prose text-paper/90">“{{ att.review|truncatechars:180 }}”</p>
+        <p class="mt-1 text-xs text-marquee">Hidden from others by a moderator.</p>
+      {% endif %}
+    {% endif %}
+    {% if is_owner %}
+      <p class="mt-2 flex gap-4 text-sm">
+        <a href="{% url 'shows:detail' att.event_id %}" class="text-lilac underline underline-offset-4">{% if att.rating or att.review %}View{% else %}Rate and review{% endif %}</a>
+        <a href="{% url 'shows:edit' att.pk %}" class="text-haze underline underline-offset-4 hover:text-paper" aria-label="Edit your entry for {{ att.event.artist.name }} on {{ att.event.event_date|date:'M j, Y' }}">Edit</a>
+      </p>
+    {% endif %}
+  </div>
+  <div class="pt-1 text-right">
+    {% stars att.rating "0.95rem" %}
+    {% if att.rating %}<p class="mt-0.5 hidden text-xs text-haze sm:block">{{ att.rating|rating_display }} / 5</p>{% endif %}
+  </div>
+</li>

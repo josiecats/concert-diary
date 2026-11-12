@@ -1,0 +1,38 @@
+# Render Blueprint: one web service + one Postgres database.
+# In Render: New > Blueprint > pick this repo. Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: concert-diary
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application --workers 2 --timeout 60
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: concert-diary-db
+          property: connectionString
+      - key: SETLISTFM_CLIENT
+        value: mock
+      - key: SEED_DEMO
+        value: "true"
+      # Fill these in the dashboard if you want them (never commit real values):
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: SETLISTFM_API_KEY
+        sync: false
+
+databases:
+  - name: concert-diary-db
+    plan: free
+    databaseName: concert_diary
+    user: concert_diary
