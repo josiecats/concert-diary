@@ -2,13 +2,13 @@
 {% block title %}Add a show manually{% endblock %}
 {% block content %}
 <a href="{% url 'shows:search' %}" class="text-sm text-haze hover:text-paper">Back to search</a>
-<h1 class="mt-2 font-poster text-[clamp(2.75rem,9vw,5rem)] font-900 leading-[0.9]">Add a show manually</h1>
+<h1 class="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">Add a show manually</h1>
 <p class="mt-2 max-w-prose text-haze">For gigs that aren't on setlist.fm. It counts in your stats and goes on your map like any other show.</p>
 
 <form method="post" class="mt-8 max-w-2xl" novalidate>
   {% csrf_token %}
   {% if form.non_field_errors %}
-    <p class="mb-5 rounded-lg border border-riso px-4 py-3" role="alert">{{ form.non_field_errors.0 }}</p>
+    <p class="mb-5 rounded-xl border border-riso px-4 py-3" role="alert">{{ form.non_field_errors.0 }}</p>
   {% endif %}
 
   <fieldset class="grid gap-5 sm:grid-cols-2">
@@ -25,7 +25,7 @@
   </fieldset>
 
   <fieldset class="mt-8 grid gap-5 border-t border-rail pt-6">
-    <legend class="font-poster text-2xl font-800">How was it? <span class="font-sans text-base font-normal text-haze">(optional, you can add this later)</span></legend>
+    <legend class="text-xl font-bold">How was it? <span class="font-sans text-base font-normal text-haze">(optional, you can add this later)</span></legend>
     <div class="max-w-xs">
       <label class="label" for="{{ form.rating.id_for_label }}">Rating</label>
       {{ form.rating }}
@@ -38,6 +38,6 @@
     </div>
   </fieldset>
 
-  <button type="submit" class="mt-8 rounded-full bg-riso px-6 py-3 font-bold text-stage hover:bg-paper">Add to my diary</button>
+  <button type="submit" class="mt-8 btn">Add to my diary</button>
 </form>
 {% endblock %}

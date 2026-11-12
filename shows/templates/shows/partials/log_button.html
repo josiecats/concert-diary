@@ -2,18 +2,18 @@
   <span class="text-sm font-bold text-marquee" role="status">This show is already in your diary.</span>
 {% elif just_logged %}
   <span class="flex flex-wrap items-center gap-x-3 gap-y-1" role="status">
-    <span class="text-sm font-bold text-emerald-300">&#10003; In your diary</span>
+    <span class="text-sm font-bold text-lilac">&#10003; In your diary</span>
     <a href="{% url 'shows:detail' event.pk %}" class="text-sm text-riso underline underline-offset-4">Rate and review</a>
   </span>
 {% elif logged or result.id in logged_ids %}
-  <span class="text-sm text-emerald-300">&#10003; In your diary</span>
+  <span class="text-sm text-lilac">&#10003; In your diary</span>
 {% else %}
   <button
     hx-post="{% url 'shows:log' result.id %}"
     hx-target="this"
     hx-swap="outerHTML"
     hx-disabled-elt="this"
-    class="rounded-full bg-riso px-5 py-2 text-sm font-bold text-stage hover:bg-paper disabled:opacity-60"
+    class="btn btn-sm disabled:opacity-60"
     aria-label="Log {{ result.artist_name }} at {{ result.venue_name }} on {{ result.event_date|date:'M j, Y' }}">
     Log
   </button>

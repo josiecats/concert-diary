@@ -25,10 +25,10 @@
     var visits = pin.count === 1 ? "1 show" : pin.count + " shows";
     var items = pin.shows.map(function (s) {
       return '<li><a href="' + escapeHtml(s.url) + '">' + escapeHtml(s.artist) + "</a>" +
-        '<span style="color:#B3A6C4"> on ' + escapeHtml(s.date) + "</span></li>";
+        '<span style="color:#BBB0D6"> on ' + escapeHtml(s.date) + "</span></li>";
     }).join("");
     return '<p style="margin:0;font-weight:700">' + escapeHtml(pin.name) + "</p>" +
-      '<p style="margin:0 0 6px;color:#B3A6C4">' + escapeHtml(pin.city) + ", " + visits + "</p>" +
+      '<p style="margin:0 0 6px;color:#BBB0D6">' + escapeHtml(pin.city) + ", " + visits + "</p>" +
       '<ul style="margin:0;padding-left:1rem">' + items + "</ul>";
   }
 

@@ -8,7 +8,7 @@
                 aria-describedby="review-help-{{ att.pk }}" placeholder="What do you want to remember?">{% if draft %}{{ draft }}{% else %}{{ att.review }}{% endif %}</textarea>
       <p id="review-help-{{ att.pk }}" class="mt-1 text-sm text-haze">Optional. Up to 5,000 characters.</p>
       {% if error %}<p class="errorlist" role="alert">{{ error }}</p>{% endif %}
-      <button type="submit" class="mt-3 rounded-full bg-riso px-5 py-2 font-bold text-stage hover:bg-paper">Save review</button>
+      <button type="submit" class="mt-3 btn">Save review</button>
     </form>
   {% else %}
     <p class="label">Your review</p>
@@ -21,8 +21,8 @@
     {% endif %}
     <p class="mt-3 flex flex-wrap items-center gap-4">
       <a href="{% url 'shows:edit' att.pk %}" hx-get="{% url 'shows:review' att.pk %}" hx-target="#review-{{ att.pk }}" hx-swap="outerHTML"
-         class="rounded-full border border-riso px-4 py-1.5 text-sm font-bold text-riso hover:bg-riso hover:text-stage">{% if att.review %}Edit review{% else %}Write a review{% endif %}</a>
-      {% if saved %}<span class="text-sm text-emerald-300" role="status">Review saved.</span>{% endif %}
+         class="btn-outline btn-sm">{% if att.review %}Edit review{% else %}Write a review{% endif %}</a>
+      {% if saved %}<span class="text-sm text-lilac" role="status">Review saved.</span>{% endif %}
     </p>
   {% endif %}
 </div>

@@ -2,7 +2,7 @@
 {% block title %}Log in to Concert Diary{% endblock %}
 {% block content %}
 <section aria-labelledby="login-heading" class="mx-auto max-w-md rounded-xl border border-rail bg-booth p-6 sm:p-8">
-  <h1 id="login-heading" class="font-poster text-5xl font-900">Welcome back</h1>
+  <h1 id="login-heading" class="text-4xl font-bold tracking-tight">Welcome back</h1>
   <p class="mt-1 text-sm text-haze">New here? <a href="{% url 'account_signup' %}" class="font-bold text-riso underline underline-offset-4">Create your diary</a></p>
 
   <div class="mt-6">{% include "account/_google_button.html" %}</div>
@@ -10,7 +10,7 @@
 
   <form method="post" action="{% url 'account_login' %}" class="space-y-4" novalidate>
     {% csrf_token %}
-    {% if form.non_field_errors %}<p class="rounded-lg border border-riso px-3 py-2 text-sm" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
+    {% if form.non_field_errors %}<p class="rounded-xl border border-riso px-3 py-2 text-sm" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
     <div>
       <label for="id_login" class="label">Email or username</label>
       <input id="id_login" name="login" type="text" autocomplete="username" required class="field" value="{{ form.login.value|default:'' }}" autofocus>
@@ -23,10 +23,10 @@
       <input id="id_password" name="password" type="password" autocomplete="current-password" required class="field">
     </div>
     <label class="flex items-center gap-2 text-sm">
-      <input type="checkbox" name="remember" class="h-4 w-4 accent-[#FF5C93]"> Keep me logged in
+      <input type="checkbox" name="remember" class="h-4 w-4 accent-[#D8B4FE]"> Keep me logged in
     </label>
     {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
-    <button type="submit" class="w-full rounded-full bg-riso px-5 py-3 font-bold text-stage hover:bg-paper">Log in</button>
+    <button type="submit" class="w-full btn">Log in</button>
   </form>
   <p class="mt-6 text-sm text-haze">Just looking? <a href="{% url 'accounts:profile' 'demo' %}" class="text-riso underline underline-offset-4">See a demo profile</a>, or log in as <span class="text-paper">demo</span> with password <span class="text-paper">demo12345</span>.</p>
 </section>

@@ -2,15 +2,15 @@
 {% block title %}Log your first show{% endblock %}
 {% block content %}
 <section aria-labelledby="onboarding-heading" class="mx-auto max-w-3xl">
-  <p class="font-poster text-2xl font-800 text-riso">You're in, @{{ user.username }}.</p>
-  <h1 id="onboarding-heading" class="mt-1 font-poster text-[clamp(3.25rem,12vw,7rem)] font-900 uppercase leading-[0.85]">Log your first show</h1>
+  <p class="text-xl font-bold text-riso">You're in, @{{ user.username }}.</p>
+  <h1 id="onboarding-heading" class="mt-2 text-[clamp(2.6rem,9vw,4.5rem)] font-bold leading-[1] tracking-tight">Log your first show</h1>
   <p class="mt-4 max-w-prose text-lg text-haze">Who was the last band you saw? Type their name, find the night you were there and log it in one tap.</p>
 
   <form method="get" action="{% url 'shows:search' %}" role="search" class="mt-8 flex flex-col gap-3 sm:flex-row">
     <label for="onboarding-artist" class="sr-only">Artist</label>
     <input id="onboarding-artist" name="artist" type="search" required minlength="2" autocomplete="off" autofocus
            class="field text-lg sm:flex-1" placeholder="Artist name">
-    <button type="submit" class="rounded-full bg-riso px-6 py-3 font-bold text-stage hover:bg-paper">Find shows</button>
+    <button type="submit" class="btn">Find shows</button>
   </form>
 
   <p class="mt-6 text-sm text-haze">

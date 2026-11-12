@@ -6,7 +6,7 @@
     {% for result in results %}
       <li class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-4">
         <div class="min-w-0">
-          <p class="font-poster text-2xl font-800 leading-tight">{{ result.artist_name }}</p>
+          <p class="text-xl font-bold leading-tight">{{ result.artist_name }}</p>
           <p class="text-haze">
             <time datetime="{{ result.event_date|date:'Y-m-d' }}" class="font-bold text-paper">{{ result.event_date|date:"M j, Y" }}</time>
             at {{ result.venue_name }}, {{ result.city }}{% if result.country %}, {{ result.country }}{% endif %}
@@ -22,7 +22,7 @@
   <div class="rounded-xl border border-dashed border-rail p-6" role="status">
     <p class="font-bold">No shows match "{{ query }}"{% if form.cleaned_data.year or form.cleaned_data.venue or form.cleaned_data.city %} with those filters{% endif %}.</p>
     <p class="mt-1 text-haze">Try removing a filter or checking the spelling. Small local gigs often aren't on setlist.fm.</p>
-    <a href="{{ manual_url }}" class="mt-4 inline-block rounded-full border border-riso px-4 py-2 font-bold text-riso hover:bg-riso hover:text-stage">Add it manually</a>
+    <a href="{{ manual_url }}" class="mt-4 inline-block btn-outline btn-sm">Add it manually</a>
   </div>
 {% else %}
   <p class="py-6 text-haze">Start typing an artist's name to find shows you've been to.</p>

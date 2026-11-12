@@ -3,33 +3,30 @@
 {% block content %}
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
-    <a href="{% url 'accounts:profile' owner.username %}" class="text-sm text-haze hover:text-paper">{{ profile.name }}</a>
-    <h1 class="font-poster text-[clamp(2.75rem,9vw,5rem)] font-900 leading-[0.9]">{% if is_owner %}Your diary{% else %}Diary{% endif %}</h1>
-    <p class="mt-1 text-haze">{{ total }} show{{ total|pluralize }} logged</p>
+    {% if not is_owner %}<a href="{% url 'accounts:profile' owner.username %}" class="text-sm text-haze hover:text-paper">{{ profile.name }}</a>{% endif %}
+    <h1 class="text-5xl font-bold tracking-tight sm:text-6xl">{% if is_owner %}Your diary{% else %}Diary{% endif %}</h1>
+    <p class="mt-2 text-haze">{{ total }} show{{ total|pluralize }} logged</p>
   </div>
-  {% if is_owner %}
-    <a href="{% url 'shows:search' %}" class="rounded-full bg-riso px-5 py-2.5 font-bold text-stage hover:bg-paper">Log a show</a>
-  {% endif %}
 </div>
 
 {% if total %}
-<form method="get" action="{% url 'shows:diary' owner.username %}" class="mt-6 flex flex-wrap items-end gap-3"
+<form method="get" action="{% url 'shows:diary' owner.username %}" class="mt-6 flex flex-wrap items-end gap-3 border-b border-white/10 pb-6"
       hx-get="{% url 'shows:diary' owner.username %}" hx-target="#diary-list" hx-swap="outerHTML"
       hx-trigger="change" hx-push-url="true" aria-label="Sort and filter the diary">
   <div>
-    <label for="diary-sort" class="label">Sort</label>
-    <select id="diary-sort" name="sort" class="field">
-      {% for key, label in sorts %}<option value="{{ key }}" {% if key == sort %}selected{% endif %}>{{ label }}</option>{% endfor %}
-    </select>
-  </div>
-  <div>
-    <label for="diary-year" class="label">Year</label>
-    <select id="diary-year" name="year" class="field">
-      <option value="">All years</option>
+    <label for="diary-year" class="label text-sm text-haze">Year</label>
+    <select id="diary-year" name="year" class="field py-2">
+      <option value="">All years · {{ total }}</option>
       {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
     </select>
   </div>
-  <noscript><button type="submit" class="rounded-full border border-rail px-4 py-2">Apply</button></noscript>
+  <div>
+    <label for="diary-sort" class="label text-sm text-haze">Sort</label>
+    <select id="diary-sort" name="sort" class="field py-2">
+      {% for key, label in sorts %}<option value="{{ key }}" {% if key == sort %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <noscript><button type="submit" class="btn-ghost">Apply</button></noscript>
 </form>
 {% endif %}
 

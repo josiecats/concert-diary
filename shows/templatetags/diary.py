@@ -21,8 +21,8 @@ def stars(rating, size="1rem"):
     svgs = format_html_join(
         "",
         '<svg viewBox="0 0 24 24" aria-hidden="true" style="width:{1};height:{2}">'
-        '<path d="{3}" fill="#43355A"/>'
-        '<path d="{4}" fill="#FFC94D" style="clip-path:inset(0 calc((1 - {0}) * 100%) 0 0)"/></svg>',
+        '<path d="{3}" fill="#3B2D52"/>'
+        '<path d="{4}" fill="#D8B4FE" style="clip-path:inset(0 calc((1 - {0}) * 100%) 0 0)"/></svg>',
         parts,
     )
     label = f"{value.normalize():f} out of 5 stars"
@@ -32,3 +32,23 @@ def stars(rating, size="1rem"):
 @register.filter
 def rating_display(value):
     return "" if value is None else f"{Decimal(value).normalize():f}"
+
+
+@register.filter
+def initials(name):
+    """Up to two initials for an artist tile: "Noah Kahan" -> "NK", "Goose" -> "G"."""
+    words = [w for w in str(name or "").split() if w[:1].isalnum()]
+    return "".join(w[0] for w in words[:2]).upper() or "?"
+
+
+@register.filter
+def tile_class(name):
+    """A stable colour for an artist's tile, so the same artist always looks the same."""
+    return f"tile-{sum(map(ord, str(name or ''))) % 5}"
+
+
+@register.filter
+def average_rating(attendances):
+    """Mean star rating of a list of attendances, ignoring unrated ones. None if none are rated."""
+    rated = [a.rating for a in attendances if a.rating is not None]
+    return round(float(sum(rated)) / len(rated), 1) if rated else None

@@ -2,12 +2,12 @@
 {% block title %}Pick your username · Concert Diary{% endblock %}
 {% block content %}
 <section aria-labelledby="social-signup-heading" class="mx-auto max-w-md rounded-xl border border-rail bg-booth p-6 sm:p-8">
-  <h1 id="social-signup-heading" class="font-poster text-5xl font-900">One last step</h1>
+  <h1 id="social-signup-heading" class="text-4xl font-bold tracking-tight">One last step</h1>
   <p class="mt-1 text-sm text-haze">You're signing up with {{ account.get_provider.name }}. Pick the username for your profile link.</p>
 
   <form method="post" action="{% url 'socialaccount_signup' %}" class="mt-6 space-y-4" novalidate>
     {% csrf_token %}
-    {% if form.non_field_errors %}<p class="rounded-lg border border-riso px-3 py-2 text-sm" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
+    {% if form.non_field_errors %}<p class="rounded-xl border border-riso px-3 py-2 text-sm" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
     {% if form.email %}
     <div>
       <label for="id_email" class="label">Email</label>
@@ -24,7 +24,7 @@
       {% for e in form.username.errors %}<p id="username-error" class="errorlist">{{ e }}</p>{% endfor %}
     </div>
     {{ redirect_field }}
-    <button type="submit" class="w-full rounded-full bg-riso px-5 py-3 font-bold text-stage hover:bg-paper">Create my diary</button>
+    <button type="submit" class="w-full btn">Create my diary</button>
   </form>
 </section>
 {% endblock %}

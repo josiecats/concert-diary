@@ -1,6 +1,6 @@
 <form method="post" action="{% url 'maps:fix_location' venue.pk %}"
       hx-post="{% url 'maps:fix_location' venue.pk %}" hx-target="this" hx-swap="outerHTML"
-      class="w-full rounded-lg border border-rail bg-stage p-4" aria-labelledby="fix-{{ venue.pk }}-title">
+      class="w-full rounded-xl border border-rail bg-stage p-4" aria-labelledby="fix-{{ venue.pk }}-title">
   {% csrf_token %}
   <p id="fix-{{ venue.pk }}-title" class="font-bold">Place {{ venue.name }} on the map</p>
   <p class="text-sm text-haze">Enter the city and we'll find it, or add exact coordinates.</p>
@@ -22,5 +22,5 @@
       {% if form.lng.errors %}<p class="errorlist">{{ form.lng.errors.0 }}</p>{% endif %}
     </div>
   </div>
-  <button type="submit" class="mt-4 rounded-full bg-riso px-4 py-2 font-bold text-stage hover:bg-paper">Save location</button>
+  <button type="submit" class="mt-4 btn">Save location</button>
 </form>

@@ -2,11 +2,11 @@
 {% block title %}Log out{% endblock %}
 {% block content %}
 <section class="mx-auto max-w-md rounded-xl border border-rail bg-booth p-6 sm:p-8">
-  <h1 class="font-poster text-5xl font-900">Log out?</h1>
+  <h1 class="text-4xl font-bold tracking-tight">Log out?</h1>
   <form method="post" action="{% url 'account_logout' %}" class="mt-6 flex gap-3">
     {% csrf_token %}
-    <button type="submit" class="rounded-full bg-riso px-5 py-2.5 font-bold text-stage hover:bg-paper">Log out</button>
-    <a href="{% url 'home' %}" class="rounded-full border border-rail px-5 py-2.5 hover:bg-stage">Stay logged in</a>
+    <button type="submit" class="btn">Log out</button>
+    <a href="{% url 'home' %}" class="btn-ghost">Stay logged in</a>
   </form>
 </section>
 {% endblock %}

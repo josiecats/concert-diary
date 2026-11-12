@@ -2,7 +2,7 @@
 {% block title %}Edit {{ att.event.artist.name }}, {{ att.event.event_date|date:"M j, Y" }}{% endblock %}
 {% block content %}
 <a href="{% url 'shows:detail' att.event_id %}" class="text-sm text-haze hover:text-paper">Back to the show</a>
-<h1 class="mt-2 font-poster text-[clamp(2.75rem,9vw,5rem)] font-900 leading-[0.9]">Edit your entry</h1>
+<h1 class="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">Edit your entry</h1>
 <p class="mt-2 text-lg">{{ att.event.artist.name }} at {{ att.event.venue.name }}, {{ att.event.venue.city }}, {{ att.event.event_date|date:"M j, Y" }}</p>
 <p class="text-sm text-haze">Logged {{ att.created_at|date:"M j, Y" }}{% if att.review_edited_at %}. Review edited {{ att.review_edited_at|date:"M j, Y" }}{% endif %}.</p>
 
@@ -20,13 +20,13 @@
     {% for error in form.review.errors %}<p class="errorlist">{{ error }}</p>{% endfor %}
   </div>
   <div class="flex flex-wrap gap-3">
-    <button type="submit" class="rounded-full bg-riso px-6 py-2.5 font-bold text-stage hover:bg-paper">Save changes</button>
-    <a href="{% url 'shows:detail' att.event_id %}" class="rounded-full border border-rail px-6 py-2.5 hover:bg-booth">Cancel</a>
+    <button type="submit" class="btn">Save changes</button>
+    <a href="{% url 'shows:detail' att.event_id %}" class="btn-ghost">Cancel</a>
   </div>
 </form>
 
 <section class="mt-14 max-w-2xl rounded-xl border border-rail p-6" aria-labelledby="danger-heading">
-  <h2 id="danger-heading" class="font-poster text-3xl font-800">Delete this show</h2>
+  <h2 id="danger-heading" class="text-2xl font-bold">Delete this show</h2>
   <p class="mt-1 text-haze">Remove it from your diary entirely. You can log it again later.</p>
   <div class="mt-4">{% include "shows/partials/delete_start.html" %}</div>
 </section>

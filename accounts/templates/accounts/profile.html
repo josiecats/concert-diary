@@ -5,30 +5,27 @@
 
 {% block content %}
 {% if is_owner and profile.is_private %}
-  <p class="mb-6 rounded-lg border border-rail bg-booth px-4 py-3 text-sm" role="note">
-    Only you can see this profile. <a href="{% url 'accounts:settings' %}" class="font-bold text-riso underline underline-offset-4">Change privacy</a>
+  <p class="mb-6 rounded-xl border border-rail bg-booth px-4 py-3 text-sm" role="note">
+    Only you can see this profile. <a href="{% url 'accounts:settings' %}" class="font-semibold text-lilac underline underline-offset-4">Change privacy</a>
   </p>
 {% endif %}
 
-<header class="flex flex-col gap-5 sm:flex-row sm:items-end sm:gap-8">
+<header class="flex flex-wrap items-center gap-4 sm:gap-5">
   {% if profile.avatar_url %}
-    <img src="{{ profile.avatar_url }}" alt="{{ profile.name }}'s avatar" width="128" height="128"
-         class="h-24 w-24 shrink-0 rounded-full border-4 border-riso object-cover sm:h-32 sm:w-32">
+    <img src="{{ profile.avatar_url }}" alt="{{ profile.name }}'s avatar" width="72" height="72"
+         class="h-16 w-16 shrink-0 rounded-full object-cover sm:h-[4.5rem] sm:w-[4.5rem]">
   {% else %}
-    <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-riso bg-booth font-poster text-4xl font-900 sm:h-32 sm:w-32 sm:text-5xl" role="img" aria-label="{{ profile.name }}'s avatar">{{ profile.initials }}</div>
+    <div class="avatar avatar-lg" role="img" aria-label="{{ profile.name }}'s avatar">{{ profile.initials }}</div>
   {% endif %}
-  <div class="min-w-0">
-    <h1 class="font-poster text-[clamp(3rem,11vw,6.5rem)] font-900 uppercase leading-[0.85] tracking-tight">{{ profile.name }}</h1>
-    <p class="mt-3 text-haze">
-      @{{ owner.username }}{% if profile.home_city %}, based in {{ profile.home_city }}{% endif %}.
-      Joined {{ owner.date_joined|date:"F Y" }}
+  <div class="min-w-0 flex-1">
+    <h1 class="text-2xl font-bold leading-tight sm:text-3xl">{{ profile.name }}</h1>
+    <p class="mt-1 text-haze">
+      @{{ owner.username }}{% if profile.home_city %} · {{ profile.home_city }}{% endif %}{% if profile.bio %} · <span class="text-paper/90">{{ profile.bio }}</span>{% endif %}
     </p>
-    {% if profile.bio %}<p class="mt-2 max-w-prose text-lg">{{ profile.bio }}</p>{% endif %}
+    <p class="mt-0.5 text-sm text-haze/80">Joined {{ owner.date_joined|date:"F Y" }}</p>
   </div>
   {% if is_owner %}
-    <div class="flex shrink-0 gap-2 sm:ml-auto">
-      <a href="{% url 'accounts:settings' %}" class="rounded-full border border-rail px-4 py-2 text-sm hover:bg-booth">Edit profile</a>
-    </div>
+    <a href="{% url 'accounts:settings' %}" class="btn-ghost btn-sm w-full sm:w-auto">Edit profile</a>
   {% endif %}
 </header>
 
@@ -36,43 +33,50 @@
 
 {% include "accounts/partials/stats.html" %}
 
-<section id="map" class="mt-14" aria-labelledby="map-heading">
-  <div class="flex flex-wrap items-baseline justify-between gap-2">
-    <h2 id="map-heading" class="font-poster text-4xl font-800">Where the music happened</h2>
-    <p class="text-sm text-haze">Bigger pins mean more visits. Select a pin to see the shows.</p>
-  </div>
-  <div id="profile-map" data-diary-map data-url="{% url 'maps:venues' owner.username %}" data-status-id="map-status"
-       class="map-dark mt-4 h-[340px] overflow-hidden rounded-xl border border-rail sm:h-[460px]"
-       role="region" aria-label="Map of venues {{ profile.name }} has been to"></div>
-  <p id="map-status" class="sr-only" aria-live="polite"></p>
-  {% include "maps/partials/not_on_map.html" %}
-</section>
+<div class="mt-12 grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+  <section id="map" class="scroll-mt-24" aria-labelledby="map-heading">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 id="map-heading" class="eyebrow">Where I've been</h2>
+      <p class="text-sm text-haze">{{ stats.venues }} venue{{ stats.venues|pluralize }} · {{ stats.cities }} cit{{ stats.cities|pluralize:"y,ies" }}</p>
+    </div>
+    <div id="profile-map" data-diary-map data-url="{% url 'maps:venues' owner.username %}" data-status-id="map-status"
+         class="map-dark mt-4 h-[320px] overflow-hidden rounded-2xl border border-white/10 sm:h-[420px]"
+         role="region" aria-label="Map of venues {{ profile.name }} has been to"></div>
+    <p class="mt-2 text-sm text-haze">Bigger pins mean more visits. Select a pin to see the shows.</p>
+    <p id="map-status" class="sr-only" aria-live="polite"></p>
+    {% include "maps/partials/not_on_map.html" %}
+  </section>
 
-{% if recent %}
-<section class="mt-14" aria-labelledby="recent-heading">
-  <div class="flex flex-wrap items-baseline justify-between gap-2">
-    <h2 id="recent-heading" class="font-poster text-4xl font-800">Recently logged</h2>
-    <a href="{% url 'shows:diary' owner.username %}" class="font-bold text-riso underline underline-offset-4">Open the full diary</a>
-  </div>
-  <ul class="mt-4 divide-y divide-rail border-y border-rail">
-    {% for att in recent %}
-      <li class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3">
-        <a href="{% url 'shows:detail' att.event_id %}" class="min-w-0 hover:text-riso">
-          <span class="font-bold">{{ att.event.artist.name }}</span>
-          <span class="text-haze">at {{ att.event.venue.name }}, {{ att.event.event_date|date:"M j, Y" }}</span>
-        </a>
-        {% stars att.rating %}
-      </li>
-    {% endfor %}
-  </ul>
-</section>
-{% elif is_owner %}
-<section class="mt-14 rounded-xl border border-dashed border-rail p-8 text-center">
-  <h2 class="font-poster text-3xl font-800">Your diary is empty</h2>
-  <p class="mt-2 text-haze">Search for a show you've been to and log it in one tap.</p>
-  <a href="{% url 'shows:search' %}" class="mt-5 inline-block rounded-full bg-riso px-5 py-2.5 font-bold text-stage hover:bg-paper">Log your first show</a>
-</section>
-{% endif %}
+  {% if recent %}
+  <section aria-labelledby="recent-heading">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 id="recent-heading" class="eyebrow">Recent activity</h2>
+      <a href="{% url 'shows:diary' owner.username %}" class="text-sm text-haze hover:text-paper">Full diary</a>
+    </div>
+    <ul class="mt-4">
+      {% for att in recent %}
+        <li class="border-b border-white/10 py-3.5 first:pt-1">
+          <a href="{% url 'shows:detail' att.event_id %}" class="group flex items-start gap-4">
+            <span class="tile {{ att.event.artist.name|tile_class }} h-12 w-12 items-center justify-center text-base" aria-hidden="true">{{ att.event.artist.name|initials|slice:":1" }}</span>
+            <span class="min-w-0 flex-1">
+              <span class="block font-semibold group-hover:text-lilac">{{ att.event.artist.name }}</span>
+              <span class="block text-sm text-haze">{{ att.event.venue.name }} · {{ att.event.event_date|date:"M j, Y" }}</span>
+              {% if att.review and not att.review_hidden and not att.review_has_spoilers %}<span class="mt-0.5 block truncate text-sm text-paper/90">{{ att.review|truncatechars:120 }}</span>{% endif %}
+            </span>
+            <span class="shrink-0 pt-1">{% stars att.rating "0.9rem" %}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% elif is_owner %}
+  <section class="card p-8 text-center">
+    <h2 class="text-2xl font-bold">Your diary is empty</h2>
+    <p class="mt-2 text-haze">Search for a show you've been to and log it in one tap.</p>
+    <a href="{% url 'shows:search' %}" class="btn mt-5">Log your first show</a>
+  </section>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block scripts %}{% include "maps/partials/leaflet_js.html" %}{% endblock %}

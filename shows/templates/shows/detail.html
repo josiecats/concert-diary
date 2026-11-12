@@ -3,11 +3,11 @@
 {% block title %}{{ event.artist.name }} at {{ event.venue.name }}, {{ event.event_date|date:"M j, Y" }}{% endblock %}
 {% block content %}
 <header class="border-b border-rail pb-8">
-  <p class="font-poster text-2xl font-800 text-riso">
+  <p class="eyebrow text-lilac">
     <time datetime="{{ event.event_date|date:'Y-m-d' }}">{{ event.event_date|date:"l, F j, Y" }}</time>
   </p>
-  <h1 class="mt-1 font-poster text-[clamp(3.25rem,13vw,8rem)] font-900 uppercase leading-[0.85] tracking-tight [overflow-wrap:anywhere]">{{ event.artist.name }}</h1>
-  {% if event.tour_name %}<p class="mt-3 font-poster text-3xl font-800 text-marquee">{{ event.tour_name }}</p>{% endif %}
+  <h1 class="mt-2 text-[clamp(2.75rem,10vw,5.5rem)] font-bold leading-[0.95] tracking-tight [overflow-wrap:anywhere]">{{ event.artist.name }}</h1>
+  {% if event.tour_name %}<p class="mt-3 poster-sub text-sm text-light">{{ event.tour_name }}</p>{% endif %}
   <p class="mt-3 text-lg">{{ event.venue.name }}, {{ event.venue.city }}{% if event.venue.country %}, {{ event.venue.country }}{% endif %}</p>
   <p class="mt-1 text-sm text-haze">
     {% if event.is_user_added %}User-added show{% else %}Show data from setlist.fm{% endif %}.
@@ -19,7 +19,7 @@
   <section aria-labelledby="mine-heading">
     {% if att %}
       <div class="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="mine-heading" class="font-poster text-4xl font-800">Your night</h2>
+        <h2 id="mine-heading" class="text-2xl font-bold">Your night</h2>
         <a href="{% url 'shows:edit' att.pk %}" class="text-sm text-haze underline underline-offset-4 hover:text-paper">Edit or delete this entry</a>
       </div>
       <p class="text-sm text-haze">In your diary since {{ att.created_at|date:"M j, Y" }}.</p>
@@ -28,23 +28,23 @@
         {% include "shows/partials/review_block.html" %}
       </div>
     {% elif user.is_authenticated %}
-      <h2 id="mine-heading" class="font-poster text-4xl font-800">Were you there?</h2>
+      <h2 id="mine-heading" class="text-2xl font-bold">Were you there?</h2>
       <p class="mt-1 text-haze">Log it to rate and review it.</p>
       <div class="mt-4">
         {% if event.setlistfm_id %}
           {% with result=log_result %}{% include "shows/partials/log_button.html" %}{% endwith %}
         {% else %}
-          <a href="{% url 'shows:add_manual' %}?artist={{ event.artist.name|urlencode }}&amp;venue_name={{ event.venue.name|urlencode }}&amp;city={{ event.venue.city|urlencode }}" class="rounded-full bg-riso px-5 py-2 text-sm font-bold text-stage hover:bg-paper">Add it to my diary</a>
+          <a href="{% url 'shows:add_manual' %}?artist={{ event.artist.name|urlencode }}&amp;venue_name={{ event.venue.name|urlencode }}&amp;city={{ event.venue.city|urlencode }}" class="btn btn-sm">Add it to my diary</a>
         {% endif %}
       </div>
     {% else %}
-      <h2 id="mine-heading" class="font-poster text-4xl font-800">Were you there?</h2>
+      <h2 id="mine-heading" class="text-2xl font-bold">Were you there?</h2>
       <p class="mt-1 text-haze"><a href="{% url 'account_signup' %}" class="font-bold text-riso underline underline-offset-4">Start your concert diary</a> to log it.</p>
     {% endif %}
   </section>
 
   <section aria-labelledby="others-heading">
-    <h2 id="others-heading" class="font-poster text-4xl font-800">From other fans</h2>
+    <h2 id="others-heading" class="text-2xl font-bold">From other fans</h2>
     {% for other in other_reviews %}
       <article class="mt-5 border-t border-rail pt-5">
         <div class="flex flex-wrap items-center justify-between gap-2">

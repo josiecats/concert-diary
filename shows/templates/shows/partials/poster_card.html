@@ -1,0 +1,35 @@
+{% comment %}One Top 3 poster. Needs `att` (an Attendance with top3_rank). Optional `compact` hides the tour line.{% endcomment %}
+<span class="poster poster-{{ att.top3_rank }} flex aspect-[4/5] flex-col p-3 sm:p-6">
+  {% if att.top3_rank == 1 %}
+    <svg class="poster-art" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="none" stroke="#C4B5FD" stroke-opacity="0.55" stroke-width="2">
+        <circle cx="310" cy="105" r="70"/><circle cx="310" cy="105" r="125"/><circle cx="310" cy="105" r="180"/>
+      </g>
+      <circle cx="310" cy="105" r="22" fill="#E9D5FF"/>
+    </svg>
+  {% elif att.top3_rank == 2 %}
+    <svg class="poster-art" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs><clipPath id="sun-{{ att.pk }}"><circle cx="200" cy="200" r="150"/></clipPath></defs>
+      <g clip-path="url(#sun-{{ att.pk }})" fill="#A78BFA">
+        <rect x="40" y="40" width="320" height="150"/><rect x="40" y="200" width="320" height="22"/>
+        <rect x="40" y="238" width="320" height="18"/><rect x="40" y="272" width="320" height="14"/>
+        <rect x="40" y="300" width="320" height="10"/>
+      </g>
+    </svg>
+  {% else %}
+    <svg class="poster-art" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <circle cx="320" cy="85" r="36" fill="#F0ABFC"/>
+      <g fill="none" stroke="#F5D0FE" stroke-width="3">
+        <path d="M0 300 C 70 180, 140 170, 200 230 S 330 260, 400 170" stroke-opacity="0.9"/>
+        <path d="M0 330 C 70 220, 140 210, 200 260 S 330 290, 400 210" stroke-opacity="0.55"/>
+        <path d="M0 360 C 70 260, 140 250, 200 290 S 330 320, 400 250" stroke-opacity="0.3"/>
+      </g>
+    </svg>
+  {% endif %}
+  <span class="poster-num self-start" aria-hidden="true">0{{ att.top3_rank }}</span>
+  <span class="mt-auto">
+    <span class="poster-title block">{{ att.event.artist.name }}</span>
+    {% if att.event.tour_name and not compact %}<span class="poster-sub mt-2 hidden sm:block">{{ att.event.tour_name }}</span>{% endif %}
+    <span class="poster-sub mt-1 block text-[0.6rem] sm:hidden">{{ att.event.venue.name|truncatechars:18 }}</span>
+  </span>
+</span>

@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Profile settings{% endblock %}
 {% block content %}
-<h1 class="font-poster text-5xl font-900">Edit profile</h1>
+<h1 class="text-4xl font-bold tracking-tight">Edit profile</h1>
 <p class="mt-1 text-haze">Your profile lives at <a class="text-riso underline underline-offset-4" href="{% url 'accounts:profile' user.username %}">/u/{{ user.username }}</a></p>
 
 <form method="post" class="mt-8 max-w-xl space-y-5" novalidate>
   {% csrf_token %}
   {% for field in form %}
     {% if field.name == "is_private" %}
-      <div class="flex items-start gap-3 rounded-lg border border-rail bg-booth p-4">
+      <div class="flex items-start gap-3 rounded-xl border border-rail bg-booth p-4">
         {{ field }}
         <div>
           <label for="{{ field.id_for_label }}" class="font-bold">{{ field.label }}</label>
@@ -24,6 +24,6 @@
       </div>
     {% endif %}
   {% endfor %}
-  <button type="submit" class="rounded-full bg-riso px-5 py-2.5 font-bold text-stage hover:bg-paper">Save profile</button>
+  <button type="submit" class="btn">Save profile</button>
 </form>
 {% endblock %}

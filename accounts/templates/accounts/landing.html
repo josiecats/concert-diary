@@ -1,30 +1,60 @@
 {% extends "base.html" %}
-{% block title %}Concert Diary: log every show you've seen{% endblock %}
+{% load diary %}
+{% block title %}Concert Diary: for the nights worth remembering{% endblock %}
 {% block content %}
-<section aria-labelledby="hero-heading" class="pt-4">
-  <h1 id="hero-heading" class="max-w-5xl font-poster text-[clamp(3.5rem,13vw,9rem)] font-900 uppercase leading-[0.82]">Every show you've ever seen</h1>
-  <p class="mt-6 max-w-xl text-lg text-haze">Search setlist.fm, log past concerts in one tap, rate them, and pick the three that mattered most. Your profile becomes a map of your music life.</p>
-  <div class="mt-8 flex flex-wrap gap-3">
-    <a href="{% url 'account_signup' %}" class="rounded-full bg-riso px-6 py-3 font-bold text-stage hover:bg-paper">Start your diary</a>
-    <a href="{% url 'account_login' %}" class="rounded-full border border-rail px-6 py-3 hover:bg-booth">Log in</a>
+<section aria-labelledby="hero-heading" class="grid items-center gap-10 pb-10 pt-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:pt-10">
+  {% if top3 %}
+  <figure class="mx-auto w-full max-w-[22rem] sm:max-w-[30rem] lg:order-2">
+    <div class="relative h-[15rem] sm:h-[22rem]" aria-hidden="true">
+      {% for att in top3 %}
+        <div class="absolute w-[44%] shadow-2xl shadow-black/50
+                    {% if forloop.counter == 1 %}left-0 top-8 -rotate-[9deg]{% elif forloop.counter == 2 %}left-[28%] top-0 z-10{% else %}right-0 top-10 z-20 rotate-[9deg]{% endif %}">
+          {% with compact=True %}{% include "shows/partials/poster_card.html" %}{% endwith %}
+        </div>
+      {% endfor %}
+    </div>
+    <figcaption class="mt-4 text-center text-sm text-haze">
+      {{ demo.profile.name }}'s Top 3: {% for att in top3 %}{{ att.event.artist.name }}{% if not forloop.last %}, {% endif %}{% endfor %}.
+      <a href="{% url 'accounts:profile' demo.username %}" class="font-semibold text-lilac underline underline-offset-4">See the whole profile</a>
+    </figcaption>
+  </figure>
+  {% endif %}
+
+  <div class="lg:order-1">
+    <h1 id="hero-heading" class="text-[clamp(2.6rem,9vw,5.75rem)] font-bold leading-[0.98] tracking-tight">For the nights worth remembering.</h1>
+    <p class="mt-5 max-w-xl text-lg text-paper/85 sm:text-xl">Log your concerts, rate the night, and watch your map fill up. Your live-music life, all in one place.</p>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <a href="{% url 'account_signup' %}" class="btn btn-lg">Sign up free</a>
+      <a href="{% url 'account_login' %}" class="btn-ghost btn-lg"><span class="sm:hidden">I already have an account</span><span class="hidden sm:inline">Log in</span></a>
+    </div>
+    <p class="mt-4 text-sm text-haze">Sign up with email or Google. Takes under a minute.</p>
   </div>
 </section>
 
-{% if demo and top3 %}
-<section aria-labelledby="demo-heading" class="mt-20">
-  <div class="flex flex-wrap items-baseline justify-between gap-2">
-    <h2 id="demo-heading" class="font-poster text-4xl font-800">{{ demo.profile.name }}'s Top 3</h2>
-    <a href="{% url 'accounts:profile' demo.username %}" class="font-bold text-riso underline underline-offset-4">See the whole profile</a>
+<section id="how-it-works" aria-labelledby="how-heading" class="mt-16 border-t border-white/5 pt-16 sm:mt-24">
+  <div class="text-center">
+    <h2 id="how-heading" class="text-3xl font-bold sm:text-5xl">Your concert diary in three taps</h2>
+    <p class="mt-3 text-lg text-haze">Find the show, rate the night, and keep it forever.</p>
   </div>
-  <ol class="mt-4 grid gap-4 sm:grid-cols-3">
-    {% for att in top3 %}
-      <li class="poster flex min-h-[11rem] flex-col rounded-md p-5 text-stage {% if att.top3_rank == 1 %}bg-marquee{% elif att.top3_rank == 2 %}bg-riso{% else %}bg-paper{% endif %}">
-        <span class="font-poster text-xl font-900">No. {{ att.top3_rank }}</span>
-        <span class="poster-title mt-2 font-poster text-[clamp(2.25rem,5vw,3.5rem)] font-900 uppercase leading-[0.85]">{{ att.event.artist.name }}</span>
-        <span class="mt-auto pt-4 text-sm font-bold">{{ att.event.venue.name }}, {{ att.event.event_date|date:"M j, Y" }}</span>
-      </li>
-    {% endfor %}
+  <ol class="mt-12 grid gap-10 sm:grid-cols-3">
+    <li class="border-t-2 border-violet pt-6">
+      <p class="font-poster font-bold text-lilac">01</p>
+      <h3 class="mt-3 text-xl font-bold">Search any show</h3>
+      <p class="mt-3 text-haze">Find past concerts by artist, year or city, then log them in one tap. Small local gigs? Add them yourself.</p>
+    </li>
+    <li class="border-t-2 border-[#9333EA] pt-6">
+      <p class="font-poster font-bold text-lilac">02</p>
+      <h3 class="mt-3 text-xl font-bold">Rate the night</h3>
+      <p class="mt-3 text-haze">Give it stars and a review while it's fresh. Edit it whenever the memory changes.</p>
+    </li>
+    <li class="border-t-2 border-[#C026D3] pt-6">
+      <p class="font-poster font-bold text-lilac">03</p>
+      <h3 class="mt-3 text-xl font-bold">Show off your Top 3</h3>
+      <p class="mt-3 text-haze">Pin your top three shows, and share a profile with a map of everywhere you've been.</p>
+    </li>
   </ol>
+  <div class="mt-14 text-center">
+    <a href="{% url 'account_signup' %}" class="btn btn-lg">Start your diary</a>
+  </div>
 </section>
-{% endif %}
 {% endblock %}

@@ -2,29 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}Concert Diary{% endblock %}</title>
+  <meta name="description" content="Log your concerts, rate the night, and watch your map fill up.">
+  <meta name="theme-color" content="#0E0818">
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <link rel="icon" href="{% static 'icons/icon.svg' %}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Concert Diary">
   <meta name="htmx-config" content='{"responseHandling":[{"code":"204","swap":false},{"code":"[23]..","swap":true},{"code":"409","swap":true,"error":false},{"code":"422","swap":true,"error":false},{"code":"[45]..","swap":false,"error":true}]}'>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            stage: "#1D1428",     // page background: deep plum, like a darkened venue
-            booth: "#2A1F38",     // raised surfaces
-            rail: "#43355A",      // borders and dividers
-            paper: "#F2EBDD",     // newsprint text
-            haze: "#B3A6C4",      // secondary text
-            riso: "#FF5C93",      // fluorescent pink ink: actions, pins
-            marquee: "#FFC94D",   // yellow ink: stars and Top 3
+            // Palette from CLAUDE.md / design/. Old token names kept so every template picks it up.
+            stage: "#0E0818",     // page background
+            booth: "#191127",     // raised surfaces (cards, inputs)
+            rail: "#2C2142",      // borders and dividers
+            paper: "#F7F3FF",     // text
+            haze: "#BBB0D6",      // muted text
+            riso: "#D8B4FE",      // lilac: links, accents, pins
+            marquee: "#DDD6FE",   // light lilac: notices, Top 3 badges
+            lilac: "#D8B4FE",
+            violet: "#6D28D9",
+            light: "#DDD6FE",
           },
           fontFamily: {
-            poster: ['"Big Shoulders Display"', "Impact", "sans-serif"],
-            sans: ['"Atkinson Hyperlegible"', "system-ui", "sans-serif"],
+            poster: ['"Space Grotesk"', "system-ui", "sans-serif"],
+            sans: ["Inter", "system-ui", "sans-serif"],
           },
         },
       },
@@ -34,49 +47,53 @@
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   {% block head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-stage font-sans text-paper antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-paper focus:px-3 focus:py-2 focus:text-stage">Skip to content</a>
+<body class="glow min-h-screen bg-stage font-sans text-paper antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[1100] focus:rounded-xl focus:bg-paper focus:px-3 focus:py-2 focus:text-stage">Skip to content</a>
 
-  <header class="border-b border-rail">
-    <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3" aria-label="Main">
-      <a href="{% url 'home' %}" class="font-poster text-2xl font-900 leading-none tracking-tight text-paper hover:text-riso">
-        Concert Diary
+  {% with here=request.resolver_match.url_name %}
+  <header class="site-header sticky top-0 z-[1000] border-b border-white/5">
+    <nav class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-5 sm:py-4" aria-label="Main">
+      <a href="{% url 'home' %}" class="logo shrink-0" aria-label="Concert Diary home">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="h-6 w-6"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg>
+        <span>concert diary</span>
       </a>
 
       {% if user.is_authenticated %}
-        {% with request.resolver_match.url_name as here %}
-        <ul class="hidden items-center gap-1 text-sm md:flex">
-          <li><a href="{% url 'accounts:profile' user.username %}" class="navlink" {% if here == 'profile' %}aria-current="page"{% endif %}>Profile</a></li>
-          <li><a href="{% url 'shows:diary' user.username %}" class="navlink" {% if here == 'diary' %}aria-current="page"{% endif %}>Diary</a></li>
-          <li><a href="{% url 'accounts:settings' %}" class="navlink" {% if here == 'settings' %}aria-current="page"{% endif %}>Settings</a></li>
-          <li>
-            <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}
-              <button type="submit" class="navlink">Log out</button>
-            </form>
-          </li>
-          <li><a href="{% url 'shows:search' %}" class="ml-2 rounded-full bg-riso px-4 py-2 font-bold text-stage hover:bg-paper" {% if here == 'search' %}aria-current="page"{% endif %}>Log a show</a></li>
+        <ul class="segmented hidden md:flex" role="list">
+          <li><a href="{% url 'accounts:profile' user.username %}" {% if here == 'profile' %}aria-current="page"{% endif %}>Profile</a></li>
+          <li><a href="{% url 'shows:diary' user.username %}" {% if here == 'diary' %}aria-current="page"{% endif %}>Diary</a></li>
+          <li><a href="{% url 'accounts:profile' user.username %}#map">Map</a></li>
         </ul>
 
-        <details class="relative md:hidden">
-          <summary class="cursor-pointer list-none rounded-full border border-rail px-4 py-2 text-sm" aria-label="Open menu">Menu</summary>
-          <ul class="absolute right-0 z-[1000] mt-2 w-56 rounded-lg border border-rail bg-booth p-2 text-base shadow-xl">
-            <li><a href="{% url 'shows:search' %}" class="block rounded px-3 py-2 font-bold text-riso hover:bg-rail">Log a show</a></li>
-            <li><a href="{% url 'accounts:profile' user.username %}" class="block rounded px-3 py-2 hover:bg-rail">Profile</a></li>
-            <li><a href="{% url 'shows:diary' user.username %}" class="block rounded px-3 py-2 hover:bg-rail">Diary</a></li>
-            <li><a href="{% url 'accounts:settings' %}" class="block rounded px-3 py-2 hover:bg-rail">Settings</a></li>
-            <li>
-              <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}
-                <button type="submit" class="block w-full rounded px-3 py-2 text-left hover:bg-rail">Log out</button>
-              </form>
-            </li>
-          </ul>
-        </details>
-        {% endwith %}
+        <form method="get" action="{% url 'shows:search' %}" role="search" class="hidden min-w-0 flex-1 lg:block">
+          <label for="nav-search" class="sr-only">Search shows by artist</label>
+          <div class="relative">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-haze"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <input id="nav-search" name="artist" type="search" minlength="2" autocomplete="off" placeholder="Search artists" class="nav-search">
+          </div>
+        </form>
+
+        <div class="ml-auto flex items-center gap-3">
+          <a href="{% url 'shows:search' %}" class="btn hidden md:inline-flex" {% if here == 'search' %}aria-current="page"{% endif %}>+ Log a show</a>
+          <details class="relative">
+            <summary class="avatar avatar-sm cursor-pointer list-none" aria-label="Account menu">{{ user.profile.initials }}</summary>
+            <ul class="menu absolute right-0 mt-2 w-56">
+              <li><a href="{% url 'accounts:profile' user.username %}">Your profile</a></li>
+              <li><a href="{% url 'shows:top3' %}">Edit Top 3</a></li>
+              <li><a href="{% url 'accounts:settings' %}" {% if here == 'settings' %}aria-current="page"{% endif %}>Settings</a></li>
+              <li>
+                <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}
+                  <button type="submit">Log out</button>
+                </form>
+              </li>
+            </ul>
+          </details>
+        </div>
       {% else %}
-        <ul class="flex items-center gap-1 text-sm">
-          <li><a href="{% url 'account_login' %}" class="navlink">Log in</a></li>
-          <li><a href="{% url 'account_signup' %}" class="rounded-full bg-riso px-4 py-2 font-bold text-stage hover:bg-paper">Sign up</a></li>
-        </ul>
+        <div class="ml-auto flex items-center gap-2">
+          <a href="{% url 'account_login' %}" class="btn-ghost btn-sm">Log in</a>
+          <a href="{% url 'account_signup' %}" class="btn btn-sm hidden sm:inline-flex">Sign up</a>
+        </div>
       {% endif %}
     </nav>
   </header>
@@ -84,18 +101,44 @@
   {% if messages %}
     <div class="mx-auto max-w-6xl px-4 pt-4" role="status">
       {% for message in messages %}
-        <p class="rounded-lg border border-rail bg-booth px-4 py-3 text-sm">{{ message }}</p>
+        <p class="rounded-xl border border-rail bg-booth px-4 py-3 text-sm">{{ message }}</p>
       {% endfor %}
     </div>
   {% endif %}
 
-  <main id="main" class="mx-auto max-w-6xl px-4 pb-20 pt-6 sm:pt-10">
+  <main id="main" class="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:pt-10 {% if user.is_authenticated %}has-tabbar{% endif %}">
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="border-t border-rail">
-    <p class="mx-auto max-w-6xl px-4 py-6 text-sm text-haze">Prototype with demo data. Map tiles from OpenStreetMap contributors.</p>
+  <footer class="border-t border-white/5 {% if user.is_authenticated %}has-tabbar{% endif %}">
+    <p class="mx-auto max-w-6xl px-4 py-6 text-sm text-haze">Concert Diary · show data is demo data for now · map tiles © OpenStreetMap contributors</p>
   </footer>
+
+  {% if user.is_authenticated %}
+  <nav class="tabbar md:hidden" aria-label="App">
+    <a href="{% url 'accounts:profile' user.username %}" {% if here == 'profile' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span>Profile</span>
+    </a>
+    <a href="{% url 'shows:diary' user.username %}" {% if here == 'diary' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11M9 8h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <span>Diary</span>
+    </a>
+    <a href="{% url 'shows:search' %}" class="tab-plus" {% if here == 'search' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span class="sr-only">Log a show</span>
+    </a>
+    <a href="{% url 'accounts:profile' user.username %}#map">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      <span>Map</span>
+    </a>
+    <a href="{% url 'accounts:settings' %}" {% if here == 'settings' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+  {% endif %}
+  {% endwith %}
   {% block scripts %}{% endblock %}
 </body>
 </html>

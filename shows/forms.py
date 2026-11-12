@@ -20,11 +20,11 @@ class SearchForm(forms.Form):
     artist = forms.CharField(
         max_length=120, required=False, label="Artist",
         widget=forms.SearchInput(attrs={
-            "class": "field text-lg", "placeholder": "Who did you see?", "autocomplete": "off", "autofocus": True,
+            "class": "field search-hero", "placeholder": "Artist name, e.g. Phoebe Bridgers", "autocomplete": "off", "autofocus": True,
         }),
     )
     year = forms.TypedChoiceField(choices=year_choices, required=False, coerce=int, empty_value=None,
-                                  widget=forms.Select(attrs={"class": "field"}))
+                                  widget=forms.Select(attrs={"class": "field h-full py-3.5"}))
     venue = forms.CharField(max_length=120, required=False,
                             widget=forms.TextInput(attrs={"class": "field", "placeholder": "Any venue"}))
     city = forms.CharField(max_length=120, required=False,

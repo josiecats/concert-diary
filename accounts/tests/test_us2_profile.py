@@ -33,12 +33,17 @@ class US2PublicProfileTests(TestCase):
         third = log(self.user, make_event("Mitski", chicago, date(2019, 3, 30)))
 
         resp = self.client.get(self.url)
-        self.assertEqual(resp.context["stats"], {"shows": 3, "artists": 2, "venues": 2, "cities": 2})
+        self.assertEqual(self._counts(resp), {"shows": 3, "artists": 2, "venues": 2, "cities": 2})
         self.assertContains(resp, 'data-stat="shows">3<')
 
         third.delete()
         resp = self.client.get(self.url)
-        self.assertEqual(resp.context["stats"], {"shows": 2, "artists": 1, "venues": 2, "cities": 2})
+        self.assertEqual(self._counts(resp), {"shows": 2, "artists": 1, "venues": 2, "cities": 2})
+        self.assertEqual(resp.context["stats"]["busiest_year"], 2022)  # tie broken by the later year
+
+    @staticmethod
+    def _counts(resp):
+        return {k: resp.context["stats"][k] for k in ("shows", "artists", "venues", "cities")}
 
     def test_logged_out_visitor_can_view_public_profile(self):
         self.client.logout()
